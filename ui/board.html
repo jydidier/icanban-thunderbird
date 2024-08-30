@@ -4,20 +4,27 @@
         <title>Kanban board</title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" type="text/css" href="ui.css"/>
-        <link rel="stylesheet" href="chrome://calendar/skin/calendar.css" />        
-        
     </head>
     <body>
         <div class="kanban-board">
-            <div id="action-needed">
-                <h3>Action needed</h3>
+            <div id="needs-action" class="kanban-category">
+                <h3>Needs action</h3>
+                <ul class="kanban-list" id="NEEDS-ACTION">
+
+                </ul>
             </div>
-            <div id="in-process">
+            <div id="in-process" class="kanban-category">
                 <h3>In process</h3>
+                <ul class="kanban-list" id="IN-PROCESS">
+                </ul>
             </div>
-            <div id="completed">
+            <div id="completed" class="kanban-category">
                 <h3>Completed</h3>
+                <ul class="kanban-list" id="COMPLETED">
+                </ul>
             </div>
         </div>
+
+        <script src="../scripts/kanban.js" type="module"></script>        
     </body>
 </html>

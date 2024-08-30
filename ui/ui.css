@@ -14,7 +14,6 @@ body {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    background-color: var(--layout-background-0);
 }
 
 .kanban-board > * {
@@ -23,5 +22,30 @@ body {
     margin: 3px;
     padding-left: 1em;
     padding-right: 1em;
-    border: 1px black solid;
+    border: 1px darkgray solid;
+    background-color: var(--background-color);
+    /*background-color: lightgray;*/
 }
+
+.kanban-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;    
+}
+
+.kanban-item {
+    margin: 0.5em;
+    padding: 0.5em;
+    border-radius: 3px;
+    /*color: white;*/
+    /*mix-blend-mode: difference;*/
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-height: 5lh;
+    color: white;
+}
+
+/*.kanban-item > * {
+    color: white;
+    mix-blend-mode: difference;
+}*/

@@ -118,6 +118,10 @@ export function propsToItem(props, baseItem) {
     if (props.categories) {
       item.setCategories(props.categories);
     }
+    // ADDING status
+    if (props.status) {
+      item.setProperty("status", props.status);
+    }
 
     if (props.type == "event") {
       // TODO need to do something about timezone
@@ -153,6 +157,7 @@ export function convertItem(item, options, extension) {
   props.description = item.getProperty("description") || "";
   props.location = item.getProperty("location") || "";
   props.categories = item.getCategories();
+  props.status = item.getProperty("status") || "";
 
   if (isOwnCalendar(item.calendar, extension)) {
     props.metadata = {};

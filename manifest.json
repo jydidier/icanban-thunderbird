@@ -12,7 +12,8 @@
     },
     "browser_action": {
         "default_title": "Kanban",
-        "default_icon": "images/icanban_32x32.png"
+        "default_icon": "images/icanban_32x32.png",
+        "default_area": "maintoolbar"
     },
     "background": {
         "scripts": [
@@ -21,6 +22,8 @@
         "type": "module"
     },
     "icons": {
+        "32" : "images/icanban_32x32.png",
+        "16" : "images/icanban_16x16.png"
     },
     "experiment_apis" : {
         "calendar_calendars" : {
@@ -72,7 +75,8 @@
         "contextualIdentities",
         "menus",
         "menus.overrideContext",
-        "cookies"
+        "cookies",
+        "theme"
       ]
 
 
