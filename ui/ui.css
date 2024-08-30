@@ -1,0 +1,27 @@
+/* main layout of our kanban */
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+}
+
+
+.kanban-board {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: var(--layout-background-0);
+}
+
+.kanban-board > * {
+    width: 30% ;
+    min-height: calc(100% - 2em);
+    margin: 3px;
+    padding-left: 1em;
+    padding-right: 1em;
+    border: 1px black solid;
+}
