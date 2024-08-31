@@ -1,29 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="auto">
     <head>
         <title>Kanban board</title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" type="text/css" href="ui.css"/>
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="bootstrap-icons.min.css"/>
+        <script src="../scripts/bootstrap.bundle.min.js"></script>
     </head>
-    <body>
-        <div class="kanban-board">
-            <div id="needs-action" class="kanban-category">
-                <h3>Needs action</h3>
-                <ul class="kanban-list" id="NEEDS-ACTION">
-
-                </ul>
-            </div>
-            <div id="in-process" class="kanban-category">
-                <h3>In process</h3>
-                <ul class="kanban-list" id="IN-PROCESS">
-                </ul>
-            </div>
-            <div id="completed" class="kanban-category">
-                <h3>Completed</h3>
-                <ul class="kanban-list" id="COMPLETED">
-                </ul>
+    <body style="font-size: 80%">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h5>
+                        <span class="bi-hourglass-top"></span>
+                         Needs action
+                        <span class="badge bg-primary" id="needs-action-count"></span>
+                    </h5>
+                    <div class="kanban-list" id="NEEDS-ACTION"></div>    
+                </div>
+                <div class="col">
+                    <h5><span class="bi-hourglass-split"></span>
+                         In process
+                        <span class="badge bg-primary" id="in-process-count"></span>
+                    </h5>
+                    <div class="kanban-list" id="IN-PROCESS"></div>
+                </div>
+                <div class="col">
+                    <h5><span class="bi-hourglass-bottom"></span>
+                         Completed
+                        <span class="badge bg-primary" id="completed-count"></span>
+                    </h5>
+                    <div class="kanban-list" id="COMPLETED"></div>
+                </div>
             </div>
         </div>
+
+        <!-- Modal for creating and editing tasks -->
+        <div class="modal fade modal-lg" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn bi-circle-fill" id="taskModalColor"></button>
+                        <h5 class="modal-title" id="taskModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="taskForm">
+                            <div class="mb-3">
+                                <label for="taskTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="taskTitle" name="title" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskDueDate" class="form-label">
+                                    Due date
+                                </label>
+                                <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskStatus" class="form-label">Status</label>
+                                <select class="form-select" id="taskStatus" name="status" required>
+                                    <option class="bi-hourglass-top" value="NEEDS-ACTION">Needs action</option>
+                                    <option value="IN-PROCESS">In process</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskPercentComplete" class="form-label">Percent complete</label>
+                                <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="taskDescription" name="description" rows=5 required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveTask">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card template -->
+        <template id="cardTemplate">
+            <div class="card kanban-item" draggable="true">
+                <div class="card-body">
+                    <h7 class="card-title title-ellipsis"><span class="bi-circle-fill"></span></h7>
+                    <p class="card-text text-ellipsis text-muted"></p>
+                </div>
+                <div class="card-footer text-muted">
+                    <a class="bi-pencil-fill" style="float: right;" data-bs-toggle="modal" data-bs-target="#taskModal"></a>
+                    <a class="bi-trash3-fill" style="float: right;"></a>
+                </div>
+            </div>
+        </template>
 
         <script src="../scripts/kanban.js" type="module"></script>        
     </body>

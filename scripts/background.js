@@ -4,8 +4,6 @@ let kanbanContext = await browser.contextualIdentities.create({
     "icon": "tree"
 });
 
-console.log("Kanban context", kanbanContext);
-
 let kanbanMenuItem = await browser.menus.create({
     "title": "Display kanban board",
     "contexts": ["tools_menu"],
@@ -38,6 +36,5 @@ browser.menus.onClicked.addListener(async (info, tab) => {
 });
 
 browser.browserAction.onClicked.addListener(async (...args) => {
-    console.log("action clicked", ...args);
     createKanbanBoard();
  });

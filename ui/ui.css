@@ -7,45 +7,17 @@ body {
     height: 100vh;
 }
 
-
-.kanban-board {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.text-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-height: 3lh;
 }
 
-.kanban-board > * {
-    width: 30% ;
-    min-height: calc(100% - 2em);
-    margin: 3px;
-    padding-left: 1em;
-    padding-right: 1em;
-    border: 1px darkgray solid;
-    background-color: var(--background-color);
-    /*background-color: lightgray;*/
-}
-
-.kanban-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;    
+.title-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .kanban-item {
-    margin: 0.5em;
-    padding: 0.5em;
-    border-radius: 3px;
-    /*color: white;*/
-    /*mix-blend-mode: difference;*/
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-height: 5lh;
-    color: white;
+    margin: 3px;
 }
-
-/*.kanban-item > * {
-    color: white;
-    mix-blend-mode: difference;
-}*/

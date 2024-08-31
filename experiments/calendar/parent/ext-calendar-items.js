@@ -91,9 +91,9 @@ this.calendar_items = class extends ExtensionAPI {
             if (!oldItem) {
               throw new ExtensionError("Could not find item " + id);
             }
-            if (oldItem instanceof Ci.calIEvent) {
+            if (oldItem.isEvent()) {
               updateProperties.type = "event";
-            } else if (oldItem instanceof Ci.calITodo) {
+            } else if (oldItem.isTodo()) {
               updateProperties.type = "task";
             }
             const newItem = propsToItem(updateProperties, oldItem?.clone());
