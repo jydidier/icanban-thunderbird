@@ -205,7 +205,9 @@ export function convertItem(item, options, extension) {
   } else if (props.type == "task") {
     // TODO extra properties
     props.percent = item.percentComplete;
-    props.dueDate = item.dueDate.icalString;  
+    if (item.dueDate) {
+      props.dueDate = item.dueDate.icalString;  
+    }
   }
 
   return props;

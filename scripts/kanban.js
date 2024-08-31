@@ -8,16 +8,13 @@ let dragover = (event) => {
 
 let drop = async (event) => {
     event.preventDefault();
-    console.log("Tried to drop", event.target, event.target.elementType);
     let target = event.target;
     if (event.target.nodeName === "DIV") {
         target = event.target.querySelector('.kanban-list');
-        console.log(target);
     } 
 
     if (target.classList.contains('kanban-list')) {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
-        console.log("Dropped", data, "on", target, "event", event);
         /* is the next line necessary? */
         target.appendChild(document.getElementById(data.id));
 
@@ -32,8 +29,38 @@ document.getElementById("NEEDS-ACTION").parentElement.addEventListener("dragover
 document.getElementById("COMPLETED").parentElement.addEventListener("dragover", dragover);
 document.getElementById("IN-PROCESS").parentElement.addEventListener("dragover", dragover);
 
-/* Modal setup */
+/* Modal setup for task edition */
 const taskModal = document.getElementById('taskModal');
+const saveTaskButton = document.getElementById('saveTask');
+
+const saveTask = async () => {
+    let title = document.getElementById('taskTitle').value;
+    let description = document.getElementById('taskDescription').value;
+    let dueDate = document.getElementById('taskDueDate').value;
+    let percent = document.getElementById('taskPercentComplete').value;
+    let status = document.getElementById('taskStatus').value;
+    let id = taskModal.dataset.id;  
+    let calendarId = taskModal.dataset.calendarId;
+
+    //let item = await mc.items.get(calendarId, id);
+    let item = {};
+    if (title)
+        item.title = title;
+    if (description)
+        item.description = description;
+    if (dueDate) {
+        item.dueDate = convertDateTimeField(dueDate);
+    }
+    if (percent) {
+        item.percent = parseInt(percent);
+    }
+    item.status = status;
+    await mc.items.update(calendarId, id, item);
+}
+
+saveTaskButton.addEventListener('click', saveTask);
+
+
 if (taskModal) {
     taskModal.addEventListener('show.bs.modal', async (event) => {
         const source = event.relatedTarget;
@@ -50,8 +77,8 @@ if (taskModal) {
         }
         document.getElementById('taskPercentComplete').value = item.percent;
         document.getElementById('taskStatus').value = item.status;
-        //document.getElementById('taskCalendarId').value = calendarId;
-
+        taskModal.dataset.id = id;
+        taskModal.dataset.calendarId = calendarId;
     });
 }
 
@@ -64,8 +91,17 @@ let clearBoard = () => {
     document.getElementById("COMPLETED").innerHTML = "";
 };
 
+const convertDateTimeField = (date) => {
+    return date.substr(0, 4) + 
+        date.substr(5, 2) +
+        date.substr(8, 2) +
+        'T' +
+        date.substr(11, 2) +
+        date.substr(14, 2) +
+        '00';
+}
 
-let parseICalDate = (date) => {
+const parseICalDate = (date) => {
     const year = date.substr(0, 4);
     const month = parseInt(date.substr(4, 2), 10) - 1;
     const day = date.substr(6, 2);
@@ -79,59 +115,30 @@ let populateBoard = async () => {
     let items = await mc.items.query({ type: "task"});
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
-        // TODO: use html template fragment
-        let card = document.createElement('div');
-        card.classList.add('card');
-        card.classList.add('kanban-item');
-        card.id = element.id;
-        card.draggable = true;
-            card.addEventListener("dragstart", (event) => {
-                event.dataTransfer.setData("text/plain", JSON.stringify({id : event.target.id, calendarId: element.calendarId}));
-                event.dataTransfer.dropEffect = "move";
-            }
-        );
-
+        const template = document.getElementById('cardTemplate');
+        const card = template.content.cloneNode(true).children[0];
+        card.addEventListener("dragstart", (event) => {
+            event.dataTransfer.setData("text/plain", JSON.stringify({id : event.target.id, calendarId: element.calendarId}));
+            event.dataTransfer.dropEffect = "move";
+        });
         let calendar = await mc.calendars.get(element.calendarId);
         card.style.borderColor = calendar.color;
+        card.querySelector('.bi-circle-fill').style.color = calendar.color;
+        card.querySelector('.card-title').appendChild( 
+            document.createTextNode(' ' + element.title)
+        );
+        card.querySelector('.card-text').textContent = element.description;
 
-        let cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-
-        let cardTitle = document.createElement('h7');
-        cardTitle.classList.add('card-title');
-        cardTitle.classList.add('title-ellipsis');
-
-        let icon = document.createElement('span');
-        icon.classList.add('bi-circle-fill');
-        icon.style.color = calendar.color;
-        cardTitle.appendChild(icon);
-        cardTitle.appendChild(document.createTextNode(' ' + element.title));
-
-
-        cardBody.appendChild(cardTitle);
-
-        let cardContent = document.createElement('p');
-        cardContent.textContent = element.description;
-        cardContent.classList.add('card-text');
-        cardContent.classList.add('text-ellipsis');
-        cardContent.classList.add('text-muted');
-        cardBody.appendChild(cardContent);
-
-        let cardFooter = document.createElement('div');
-        cardFooter.classList.add('card-footer');
-
+        let cardFooter = card.querySelector('.card-footer');
         if (element.dueDate) {
             let cardDueDate = document.createElement('span');
             cardDueDate.classList.add('bi-calendar-week-fill');
             cardFooter.appendChild(cardDueDate);
             cardFooter.appendChild(document.createTextNode(' '+parseICalDate(element.dueDate).toLocaleString()+' '));
-
-            //if (element.status !== "COMPLETED") {
-                if (Date.now() > parseICalDate(element.dueDate)) {
-                    cardFooter.classList.add('text-danger');
-                    cardFooter.style.fontWeight = 'bold';
-                }
-            //}
+            if (Date.now() > parseICalDate(element.dueDate)) {
+                cardFooter.classList.add('text-danger');
+                cardFooter.style.fontWeight = 'bold';
+            }
         } else {
             cardFooter.classList.add('text-muted');
         }
@@ -142,32 +149,17 @@ let populateBoard = async () => {
             cardFooter.appendChild(document.createTextNode(' '+element.percent + '%'));
         }
 
-        let cardActionEdit = document.createElement('a');
-        cardActionEdit.classList.add('bi-pencil-fill');
-        cardActionEdit.style.float = 'right';
+        let cardActionEdit = card.querySelector('.bi-pencil-fill');
         cardActionEdit.dataset.id = element.id;
         cardActionEdit.dataset.calendarId = element.calendarId;
-        cardActionEdit.dataset.bsToggle = 'modal';
-        cardActionEdit.dataset.bsTarget = '#taskModal';
-        
 
-        let cardActionDelete = document.createElement('a');
-        cardActionDelete.classList.add('bi-trash3-fill');
-        cardActionDelete.style.float = 'right';
+        let cardActionDelete = card.querySelector('.bi-trash3-fill');
         cardActionDelete.dataset.id = element.id;
         cardActionDelete.dataset.calendarId = element.calendarId;
         cardActionDelete.addEventListener('click', async (event) => {
             confirm("Are you sure you want to delete this item?") &&
                 await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
         });
-
-        cardFooter.appendChild(cardActionDelete);
-        cardFooter.appendChild(cardActionEdit);
-
-        card.appendChild(cardBody);
-        card.appendChild(cardFooter);
-
-    
 
         let list = document.getElementById(element.status);
         counts[element.status] += 1;
