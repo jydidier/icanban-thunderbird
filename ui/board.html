@@ -8,35 +8,38 @@
         <link rel="stylesheet" type="text/css" href="bootstrap-icons.min.css"/>
         <script src="../scripts/bootstrap.bundle.min.js"></script>
     </head>
-    <body style="font-size: 80%">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg">
-                <div class="container-fluid">
-                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi-filter"></i> Filters</button>
-                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal"><i class="bi-sort-alpha-down"></i> Sort settings</button>
-                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="bi-calendar-plus-fill"></i> New task...</button>
-                </div>
-            </nav>
-
+    <body style="font-size: 80%;">
+        <div class="container h-100">
             <div class="row">
-                <div class="col">
+                <nav class="navbar navbar-expand-lg">
+                    <div class="container-fluid">
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi-filter"></i> Filters</button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal"><i class="bi-sort-alpha-down"></i> Sort settings</button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="bi-calendar-plus-fill"></i> New task...</button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#helpModal"><i class="bi-question-circle-fill"></i> Help</button>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="row h-100" >
+                <div class="col border-start">
                     <h5>
                         <span class="bi-hourglass-top"></span>
-                         Needs action
+                        <b> Needs action</b>
                         <span class="badge bg-primary" id="needs-action-count"></span>
                     </h5>
                     <div class="kanban-list" id="NEEDS-ACTION"></div>    
                 </div>
-                <div class="col">
+                <div class="col border-start">
                     <h5><span class="bi-hourglass-split"></span>
-                         In process
+                         <b> In process</b>
                         <span class="badge bg-primary" id="in-process-count"></span>
                     </h5>
                     <div class="kanban-list" id="IN-PROCESS"></div>
                 </div>
-                <div class="col">
+                <div class="col border-start">
                     <h5><span class="bi-hourglass-bottom"></span>
-                         Completed
+                         <b> Completed</b>
                         <span class="badge bg-primary" id="completed-count"></span>
                     </h5>
                     <div class="kanban-list" id="COMPLETED"></div>
@@ -231,6 +234,36 @@
             </div>
         </div>
 
+        <!-- Modal for help -->
+        <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="helpModalLabel">How to use the Kanban board</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            The Kanban board is a tool for visualizing work, which helps you to manage tasks and projects.
+                            The board is divided into three columns: Needs action, In process, and Completed.
+                            Each column represents a stage of the work process.
+                            You can move tasks between columns by dragging and dropping them.
+                        </p>
+                        <p>
+                            To create a new task, click on the "New task..." button. Fill in the form and click on the "Save" button.
+                            To edit a task, click on the "Edit" button in the task card.
+                        </p>
+                        <p>
+                            You can filter tasks by calendar and priority. You can sort tasks by due date, priority, and percent complete.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Card template -->
         <template id="cardTemplate">
             <div class="card kanban-item" draggable="true">

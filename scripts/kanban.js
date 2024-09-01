@@ -26,6 +26,7 @@ let drop = async (event) => {
     if (target.classList.contains('kanban-list')) {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
         /* is the next line necessary? */
+        console.log("data:", data);
         target.appendChild(document.getElementById(data.id));
 
         await mc.items.update(data.calendarId, data.id, { status: target.id });
@@ -296,8 +297,9 @@ let populateBoard = async () => {
     items.forEach(async element => {
         const template = document.getElementById('cardTemplate');
         const card = template.content.cloneNode(true).children[0];
+        card.id = element.id;
         card.addEventListener("dragstart", (event) => {
-            event.dataTransfer.setData("text/plain", JSON.stringify({id : event.target.id, calendarId: element.calendarId}));
+            event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
             event.dataTransfer.dropEffect = "move";
         });
         let calendar = await mc.calendars.get(element.calendarId);
@@ -369,6 +371,9 @@ let populateBoard = async () => {
         counts[element.status] += 1;
         
         list.appendChild(card);
+        document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
+        document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
+        document.getElementById("completed-count").textContent = counts["COMPLETED"];
     });
 
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];

@@ -97,6 +97,11 @@ this.calendar_items = class extends ExtensionAPI {
               updateProperties.type = "task";
             }
             const newItem = propsToItem(updateProperties, oldItem?.clone());
+            if (oldItem.isCompleted && updateProperties.status !== "COMPLETED") {
+              newItem.isCompleted = false;
+              newItem.status = updateProperties.status;
+            }
+
             newItem.calendar = calendar.superCalendar;
 
             if (updateProperties.metadata && isOwnCalendar(calendar, context.extension)) {
