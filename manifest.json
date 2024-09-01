@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "iCanban",
-    "description": "Kanban using icalendars as a support",
+    "name": "iCanban - Kanban with ICAL",
+    "description": "ICAL's todo have status that are just perfect for a basic Kanban board. This extension provides it so that you can manage your tasks visually.",
     "version": "1.0.0",
     "author": "Jean-Yves Didier",
     "homepage_url": "https://github.com/jydidier/icanban-thunderbird",
