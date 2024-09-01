@@ -8,13 +8,13 @@
     "browser_specific_settings": {
         "gecko": {
             "id": "jydidier.icanban@addons.thunderbird.net",
-            "strict_min_version": "128.0"
+            "strict_min_version": "128.0",
+            "strict_max_version": "128.*"
         }
     },
     "browser_action": {
         "default_title": "Kanban",
-        "default_icon": "images/icanban_32x32.png",
-        "default_area": "maintoolbar"
+        "default_icon": "images/icanban_32x32.png"
     },
     "background": {
         "scripts": [
