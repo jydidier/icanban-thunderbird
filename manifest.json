@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "iCanban",
     "description": "Kanban using icalendars as a support",
-    "version": "0.5",
+    "version": "1.0.0",
     "author": "Jean-Yves Didier",
     "homepage_url": "https://github.com/jydidier/icanban-thunderbird",
     "browser_specific_settings": {
