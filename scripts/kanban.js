@@ -9,6 +9,7 @@ const mc = messenger.calendar;
 
 let filter = {};
 let sort = null;
+const categories = new Set();
 
 /* DRAG'N DROP SETUP */
 let dragover = (event) => {
@@ -25,8 +26,7 @@ let drop = async (event) => {
 
     if (target.classList.contains('kanban-list')) {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
-        /* is the next line necessary? */
-        console.log("data:", data);
+        /* necessary as an instant feedback for the user */
         target.appendChild(document.getElementById(data.id));
 
         await mc.items.update(data.calendarId, data.id, { status: target.id });
@@ -72,18 +72,14 @@ const saveTask = async () => {
     }
     item.status = status;
 
-    console.log("saving item:", item, id , calendarId, newCalendarId);
 
     if (id !== "null") {
-        console.log("updating item",id, typeof id, calendarId, typeof calendarId, item);
         await mc.items.update(calendarId, id, item);
 
         if (calendarId !== newCalendarId) {
-            console.log("moving item");
             await mc.items.move(calendarId, newCalendarId, id);
         }
     } else {
-        console.log("creating item");
         item.type="task";
         await mc.items.create(newCalendarId, item);
     }
@@ -105,7 +101,6 @@ if (taskModal) {
             status: "NEEDS-ACTION",
             priority: 0
         };
-        console.log("id:", id);
 
         if (id) {
             item = await mc.items.get(calendarId, id);            
@@ -117,7 +112,6 @@ if (taskModal) {
         document.getElementById('taskTitle').value = item.title;
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
-        console.log("priority:", item.priority);
         if (item.dueDate) {
             document.getElementById('taskDueDate').value = parseICalDate(item.dueDate).toISOString().slice(0,16);
         }
@@ -251,7 +245,6 @@ if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];   
-        console.log("sort value", sortValue, sort);
         refreshBoard();
     });
 }
@@ -297,6 +290,7 @@ let populateBoard = async () => {
     items.forEach(async element => {
         const template = document.getElementById('cardTemplate');
         const card = template.content.cloneNode(true).children[0];
+        //element.categories.forEach(cat => categories.add(cat));
         card.id = element.id;
         card.addEventListener("dragstart", (event) => {
             event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
