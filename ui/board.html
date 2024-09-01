@@ -10,6 +10,14 @@
     </head>
     <body style="font-size: 80%">
         <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi-filter"></i> Filters</button>
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal"><i class="bi-sort-alpha-down"></i> Sort settings</button>
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="bi-calendar-plus-fill"></i> New task...</button>
+                </div>
+            </nav>
+
             <div class="row">
                 <div class="col">
                     <h5>
@@ -52,23 +60,42 @@
                                 <input type="text" class="form-control" id="taskTitle" name="title" required/>
                             </div>
                             <div class="mb-3">
-                                <label for="taskDueDate" class="form-label">
-                                    Due date
-                                </label>
-                                <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
-                            </div>
-                            <div class="mb-3">
-                                <label for="taskStatus" class="form-label">Status</label>
-                                <select class="form-select" id="taskStatus" name="status" required>
-                                    <option class="bi-hourglass-top" value="NEEDS-ACTION">Needs action</option>
-                                    <option value="IN-PROCESS">In process</option>
-                                    <option value="COMPLETED">Completed</option>
+                                <label for="taskCalendar" class="form-label">Calendar</label>
+                                <select class="form-select" id="taskCalendar" name="calendar" required>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="taskPercentComplete" class="form-label">Percent complete</label>
-                                <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
+                            <div class="row g-2">
+                                <div class="col-md">
+                                    <label for="taskDueDate" class="form-label">
+                                        Due date
+                                    </label>
+                                    <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
+                                </div>
+                                <div class="col-md">
+                                    <label for="taskPercentComplete" class="form-label">Percent complete</label>
+                                    <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
+                                </div>
                             </div>
+                            <div class="row g-2">
+                                <div class="col-md">
+                                    <label for="taskStatus" class="form-label">Status</label>
+                                    <select class="form-select" id="taskStatus" name="status" required>
+                                        <option data-icon="bi-hourglass-top" value="NEEDS-ACTION">Needs action</option>
+                                        <option data-icon="bi-hourglass-split" value="IN-PROCESS">In process</option>
+                                        <option data-icon="bi-hourglass-bottom" value="COMPLETED">Completed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md">
+                                    <label for="taskPriority" class="form-label">Priority</label>
+                                    <select class="form-select" id="taskPriority" name="priority" required>
+                                        <option value=0>None</option>
+                                        <option value=9>Low</option>
+                                        <option value=5>Medium</option>
+                                        <option value=1>High</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="taskDescription" class="form-label">Description</label>
                                 <textarea class="form-control" id="taskDescription" name="description" rows=5 required></textarea>
@@ -78,6 +105,127 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveTask">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for filtering tasks -->
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filterModalLabel">Filter settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="filterForm">
+                            <h5>Calendars</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="allCalendars" checked/>
+                                <label class="form-check-label" for="allCalendars">All calendars</label>
+                            </div>
+                            <div id="calendarList">
+
+                            </div>
+                            <h5>Priority</h5>
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="allPriorities" checked />
+                                <label class="form-check-label" for="allPriorities">All</label>
+                            </div>
+                            <div id="priorityList">
+                                <div class="mb-3 form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"  name="prioritiesFilter" value="0" id="nonePriority" disabled/>
+                                    <label class="form-check-label" for="nonePriority">None</label>
+                                </div>
+                                <div class="mb-3 form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"  name="prioritiesFilter" value="9" id="lowPriority" disabled/>
+                                    <label class="form-check-label" for="lowPriority">Low</label>
+                                </div>
+                                <div class="mb-3 form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"  name="prioritiesFilter" value="5" id="mediumPriority" disabled/>
+                                    <label class="form-check-label" for="mediumPriority">Normal</label>
+                                </div>
+                                <div class="mb-3 form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"  name="prioritiesFilter" value="1" id="highPriority" disabled/>
+                                    <label class="form-check-label" for="highPriority">High</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyFilter">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for sorting tasks -->
+        <div class="modal fade" id="sortModal" tabindex="-1" aria-labelledby="sortModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sortModalLabel">Sort by</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="sortList">
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="none" id="noneSort" checked/>
+                                <label class="form-check-label" for="dueDateSort">None</label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="dueDateASort" id="dueDateASort"/>
+                                <label class="form-check-label" for="dueDateSort">
+                                    <i class="bi-calendar-plus-fill"></i>
+                                    <i class="bi-sort-up"></i>
+                                    Due date ascending
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="dueDateDSort" id="dueDateDSort"/>
+                                <label class="form-check-label" for="dueDateSort">
+                                    <i class="bi-calendar-plus-fill"></i>
+                                    <i class="bi-sort-down"></i>
+                                    Due date descending
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="priorityASort" id="priorityASort"/>
+                                <label class="form-check-label" for="prioritySort">
+                                    <i class="bi-exclamation-triangle-fill"></i>
+                                    <i class="bi-sort-up"></i>
+                                    Priority ascending
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="priorityDSort" id="priorityDSort"/>
+                                <label class="form-check-label" for="prioritySort">
+                                    <i class="bi-exclamation-triangle-fill"></i>
+                                    <i class="bi-sort-down"></i>
+                                    Priority descending
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="percentCompleteASort" id="percentCompleteASort"/>
+                                <label class="form-check-label" for="percentCompleteSort">
+                                    <i class="bi-percent"></i>
+                                    <i class="bi-sort-up"></i>
+                                    Percent complete ascending
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="radio" name="sort" value="percentCompleteDSort" id="percentCompleteDSort"/>
+                                <label class="form-check-label" for="percentCompleteSort">
+                                    <i class="bi-percent"></i>
+                                    <i class="bi-sort-down"></i>
+                                    Percent complete descending
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applySort">Apply</button>
                     </div>
                 </div>
             </div>

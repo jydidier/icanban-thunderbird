@@ -18,6 +18,7 @@
           "endDate": { "type": "string", "optional": true },
           "dueDate": { "type": "string", "optional": true },
           "percent" : { "type": "number", "optional": true },
+          "priority": { "type": "number", "optional": true },
           "formats": { "$ref": "RawCalendarItem", "optional": true },
           "metadata": { "type": "object", "additionalProperties": { "type": "any" }, "optional": true },
           "status": { "type": "string", "optional": true }
@@ -102,7 +103,8 @@
               "rangeStart": { "type": "string", "optional": true },
               "rangeEnd": { "type": "string", "optional": true },
               "expand": { "type": "boolean", "optional": true },
-              "status": { "type": "string", "optional": true }
+              "status": { "type": "string", "optional": true },
+              "priority": { "type": "number", "optional": true }
             }
           }
         ]
@@ -127,6 +129,7 @@
               "endDate": { "type": "string", "optional": true },
               "dueDate": { "type": "string", "optional": true },
               "percent" : { "type": "number", "optional": true },
+              "priority": { "type": "number", "optional": true },
               "formats": { "$ref": "RawCalendarItem", "optional": true },
               "returnFormat": { "$ref": "ReturnFormat", "optional": true },
               "status": { "type": "string", "optional": true },
@@ -154,6 +157,7 @@
               "endDate": { "type": "string", "optional": true },
               "dueDate": { "type": "string", "optional": true },
               "percent" : { "type": "number", "optional": true },
+              "priority": { "type": "number", "optional": true },
               "formats": { "$ref": "RawCalendarItem", "optional": true },
               "returnFormat": { "$ref": "ReturnFormat", "optional": true },
               "status": { "type": "string", "optional": true },

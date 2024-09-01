@@ -118,9 +118,11 @@ export function propsToItem(props, baseItem) {
     if (props.categories) {
       item.setCategories(props.categories);
     }
-    // ADDING status
     if (props.status) {
       item.setProperty("status", props.status);
+    }
+    if (props.priority) {
+      item.setProperty("priority", props.priority);
     }
 
     if (props.type == "event") {
@@ -164,6 +166,7 @@ export function convertItem(item, options, extension) {
   props.location = item.getProperty("location") || "";
   props.categories = item.getCategories();
   props.status = item.getProperty("status") || "";
+  props.priority = item.getProperty("priority") || 0 ;
 
 
   if (isOwnCalendar(item.calendar, extension)) {
@@ -207,6 +210,8 @@ export function convertItem(item, options, extension) {
     props.percent = item.percentComplete;
     if (item.dueDate) {
       props.dueDate = item.dueDate.icalString;  
+    } else {
+      props.dueDate = null;
     }
   }
 

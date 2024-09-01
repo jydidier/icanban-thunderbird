@@ -1,5 +1,8 @@
 const mc = messenger.calendar;
 
+let filter = {};
+let sort = null;
+
 /* DRAG'N DROP SETUP */
 let dragover = (event) => {
     event.preventDefault();
@@ -39,8 +42,10 @@ const saveTask = async () => {
     let dueDate = document.getElementById('taskDueDate').value;
     let percent = document.getElementById('taskPercentComplete').value;
     let status = document.getElementById('taskStatus').value;
+    let priority = document.getElementById('taskPriority').value;
     let id = taskModal.dataset.id;  
     let calendarId = taskModal.dataset.calendarId;
+    let newCalendarId = document.getElementById('taskCalendar').value;
 
     //let item = await mc.items.get(calendarId, id);
     let item = {};
@@ -54,8 +59,26 @@ const saveTask = async () => {
     if (percent) {
         item.percent = parseInt(percent);
     }
+    if (priority) {
+        item.priority = parseInt(priority);
+    }
     item.status = status;
-    await mc.items.update(calendarId, id, item);
+
+    console.log("saving item:", item, id , calendarId, newCalendarId);
+
+    if (id !== "null") {
+        console.log("updating item",id, typeof id, calendarId, typeof calendarId, item);
+        await mc.items.update(calendarId, id, item);
+
+        if (calendarId !== newCalendarId) {
+            console.log("moving item");
+            await mc.items.move(calendarId, newCalendarId, id);
+        }
+    } else {
+        console.log("creating item");
+        item.type="task";
+        await mc.items.create(newCalendarId, item);
+    }
 }
 
 saveTaskButton.addEventListener('click', saveTask);
@@ -64,14 +87,29 @@ saveTaskButton.addEventListener('click', saveTask);
 if (taskModal) {
     taskModal.addEventListener('show.bs.modal', async (event) => {
         const source = event.relatedTarget;
-        const id = source.dataset.id;
-        const calendarId = source.dataset.calendarId;
+        const id = source.dataset.id || null;
+        const calendarId = source.dataset.calendarId || null;
+        let item = {
+            title: "",
+            description: "",
+            dueDate: "",
+            percent: 0,
+            status: "NEEDS-ACTION",
+            priority: 0
+        };
+        console.log("id:", id);
 
-        let item = await mc.items.get(calendarId, id);
-        document.getElementById('taskModalColor').style.color = (await mc.calendars.get(calendarId)).color;
+        if (id) {
+            item = await mc.items.get(calendarId, id);            
+            document.getElementById('taskModalColor').style.color = (await mc.calendars.get(calendarId)).color;
+        } else {
+            document.getElementById('taskModalColor').style.color = "black";
+        }
         document.getElementById('taskModalLabel').textContent = item.title;
         document.getElementById('taskTitle').value = item.title;
         document.getElementById('taskDescription').value = item.description;
+        document.getElementById('taskPriority').value = item.priority;
+        console.log("priority:", item.priority);
         if (item.dueDate) {
             document.getElementById('taskDueDate').value = parseICalDate(item.dueDate).toISOString().slice(0,16);
         }
@@ -79,10 +117,136 @@ if (taskModal) {
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
         taskModal.dataset.calendarId = calendarId;
+
+        document.querySelectorAll('#taskCalendar option').forEach(option => option.remove());
+
+        let calendars = await mc.calendars.query({});
+        calendars.sort( 
+            (a, b) => a.name.localeCompare(b.name) 
+        ).forEach(calendar => {
+            let option = document.createElement('option');
+            option.value = calendar.id;
+            option.text = calendar.name;
+            document.getElementById('taskCalendar').add(option);
+        });
+        document.getElementById('taskCalendar').value = calendarId;
+
+    });
+}
+
+/* handling modal for filtering */
+
+const filterModal = document.getElementById('filterModal');
+const allCalendars = document.getElementById('allCalendars');
+const applyFilterButton = document.getElementById('applyFilter');
+const allPriorities = document.getElementById('allPriorities');
+
+
+if (filterModal) {
+    filterModal.addEventListener('show.bs.modal', async (event) => {
+        let calendars = await mc.calendars.query({});
+        let filterList = document.getElementById('calendarList');
+        let allCalendars = document.getElementById('allCalendars');
+        filterList.innerHTML = "";
+        calendars.sort( (a,b) => a.name.localeCompare(b.name) ).forEach(calendar => {
+            let filterItem = document.createElement('div');
+            filterItem.classList.add('form-check');
+            filterItem.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${calendar.id}" id="filter-${calendar.id}" ${allCalendars.value?'disabled':''} ${filter.calendarId && filter.calendarId.includes(calendar.id)?'checked':''}>
+                <label class="form-check-label" for="filter-${calendar.id}">
+                    <i class="bi bi-circle-fill" style="color:${calendar.color}"></i>
+                    ${calendar.name}
+                </label>
+            `;
+            filterList.appendChild(filterItem);
+        });
+
+        let checkboxesCal = document.querySelectorAll('#calendarList input');
+        checkboxesCal.forEach(checkbox => {
+            checkbox.disabled = allCalendars.checked;
+        });
+
+        let checkboxesPrio = document.querySelectorAll('#priorityList input');
+        checkboxesPrio.forEach(checkbox => {
+            checkbox.disabled = allPriorities.checked;
+        });
+
     });
 }
 
 
+if (applyFilterButton) {
+    applyFilterButton.addEventListener('click', async (event) => {
+        filter = {};
+        let calendarList = document.getElementById('calendarList');
+        let calendarIds = [];
+        if (!allCalendars.checked) {
+            calendarIds = Array.from(calendarList.querySelectorAll('input:checked')).map(input => input.value);
+        }
+        let priorityList = document.getElementById('priorityList');
+        let priorities = [];
+        if (!allPriorities.checked) {
+            priorities = Array.from(priorityList.querySelectorAll('input:checked')).map(input => parseInt(input.value));
+        }
+
+        if (calendarIds.length > 0) {
+            filter.calendarId = calendarIds;
+        }
+        if (priorities.length > 0) {
+            filter.priority = priorities[0];
+        }
+        refreshBoard();
+    });
+}
+
+if (allCalendars) {
+    allCalendars.addEventListener('change', async (event) => {
+        let checkboxes = document.querySelectorAll('#calendarList input');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = event.target.checked;
+        });
+    });
+}
+
+if (allPriorities) {    
+    allPriorities.addEventListener('change', async (event) => {
+        let checkboxes = document.querySelectorAll('#priorityList input');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = event.target.checked;
+        });
+    });
+}
+
+/* handling modal for sorting */
+
+const sortStrategies = {
+    // priority values are inverted with 1 being the highest priority
+    "priorityASort": (a, b) => { 
+        a = a || 5; // none given is normal priority
+        b = b || 5;
+        return b.priority - a.priority;
+    },
+    "priorityDSort": (a, b) => {
+        a = a || 5;
+        b = b || 5;
+        return a.priority - b.priority;
+    },
+    "percentCompleteASort": (a, b) => a.percent - b.percent,
+    "percentCompleteDSort": (a, b) => b.percent - a.percent,
+    "dueDateASort" : (a, b) => new String(a.dueDate || '').localeCompare(b.dueDate || ''),
+    "dueDateDSort" : (a, b) => new String(b.dueDate || '').localeCompare(a.dueDate || ''),
+}
+
+const applySortButton = document.getElementById('applySort');
+
+if (applySortButton) {
+    applySortButton.addEventListener('click', async (event) => {
+        let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
+        sort = (sortValue === "none") ? null : sortStrategies[sortValue];   
+        console.log("sort value", sortValue, sort);
+        refreshBoard();
+    });
+}
 
 /* Board setup */
 let clearBoard = () => {    
@@ -112,7 +276,15 @@ const parseICalDate = (date) => {
 }
 
 let populateBoard = async () => {
-    let items = await mc.items.query({ type: "task"});
+    let items = (await mc.items.query(Object.assign({ type: "task"}, filter))).filter(item => {
+        if (filter.priority !== undefined && item.priority !== filter.priority) {
+            return false;
+        }   
+        return true;
+    });
+    if (sort) {
+        items.sort(sort);
+    }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
         const template = document.getElementById('cardTemplate');
@@ -135,7 +307,7 @@ let populateBoard = async () => {
             cardDueDate.classList.add('bi-calendar-week-fill');
             cardFooter.appendChild(cardDueDate);
             cardFooter.appendChild(document.createTextNode(' '+parseICalDate(element.dueDate).toLocaleString()+' '));
-            if (Date.now() > parseICalDate(element.dueDate)) {
+            if (element.status !== 'COMPLETED' && Date.now() > parseICalDate(element.dueDate)) {
                 cardFooter.classList.add('text-danger');
                 cardFooter.style.fontWeight = 'bold';
             }
@@ -146,7 +318,32 @@ let populateBoard = async () => {
             let cardPercent = document.createElement('span');
             cardPercent.classList.add('bi-graph-up');
             cardFooter.appendChild(cardPercent);
-            cardFooter.appendChild(document.createTextNode(' '+element.percent + '%'));
+            cardFooter.appendChild(document.createTextNode(' '+element.percent + '% '));
+        }
+        if (element.categories && element.categories.length > 0) {
+            let cardCategories = document.createElement('span');
+            cardCategories.classList.add('bi-tags-fill');
+            cardFooter.appendChild(cardCategories);
+            cardFooter.appendChild(document.createTextNode(' '+element.categories.join(', ')));
+        }
+
+        if (element.priority) {
+            let cardPriority = document.createElement('span');
+            switch(element.priority) {
+                case 1:
+                    cardPriority.classList.add('bi-caret-up-fill');
+                    cardPriority.style.color = 'red';
+                    break;
+                case 9:
+                    cardPriority.classList.add('bi-caret-down-fill');
+                    cardPriority.style.color = 'green';
+                    break;
+                default:
+                    cardPriority.classList.add('bi-caret-right-fill');
+                    cardPriority.style.color = 'black';
+            }
+            cardPriority.style.float = 'right';
+            cardFooter.appendChild(cardPriority);
         }
 
         let cardActionEdit = card.querySelector('.bi-pencil-fill');
@@ -165,12 +362,11 @@ let populateBoard = async () => {
         counts[element.status] += 1;
         
         list.appendChild(card);
-
-        document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
-        document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
-        document.getElementById("completed-count").textContent = counts["COMPLETED"];
-
     });
+
+    document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
+    document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
+    document.getElementById("completed-count").textContent = counts["COMPLETED"];
 };
 
 let refreshBoard = async () => {

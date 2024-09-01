@@ -4,6 +4,7 @@
     "description": "Kanban using icalendars as a support",
     "version": "0.5",
     "author": "Jean-Yves Didier",
+    "homepage_url": "https://github.com/jydidier/icanban-thunderbird",
     "browser_specific_settings": {
         "gecko": {
             "id": "jydidier.icanban@addons.thunderbird.net",
