@@ -16,7 +16,7 @@ let kanbanMenuItem = await browser.menus.create({
 
 let createKanbanBoard = async () => {
     let icanbanTab = await browser.tabs.query({ 
-        "cookieStoreId": kanbanContext.cookieStoreId
+        "cookieStoreId": kanbanContext.cookieStoreId,
     });
 
     if (icanbanTab.length===0) {

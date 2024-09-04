@@ -105,16 +105,16 @@ if (taskModal) {
         if (id) {
             item = await mc.items.get(calendarId, id);            
             document.getElementById('taskModalColor').style.color = (await mc.calendars.get(calendarId)).color;
+            document.getElementById('taskModalLabel').textContent = item.title;
         } else {
             document.getElementById('taskModalColor').style.color = "black";
+            document.getElementById('taskModalLabel').textContent = "New task...";
         }
-        document.getElementById('taskModalLabel').textContent = item.title;
         document.getElementById('taskTitle').value = item.title;
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
-        if (item.dueDate) {
-            document.getElementById('taskDueDate').value = parseICalDate(item.dueDate).toISOString().slice(0,16);
-        }
+        document.getElementById('taskDueDate').value = item.duedate?
+            parseICalDate(item.dueDate).toISOString().slice(0,16):'';        
         document.getElementById('taskPercentComplete').value = item.percent;
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
@@ -197,6 +197,8 @@ if (applyFilterButton) {
         if (priorities.length > 0) {
             filter.priority = priorities[0];
         }
+
+        localStorage.setItem("filter", JSON.stringify(filter));
         refreshBoard();
     });
 }
@@ -244,7 +246,8 @@ const applySortButton = document.getElementById('applySort');
 if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
-        sort = (sortValue === "none") ? null : sortStrategies[sortValue];   
+        sort = (sortValue === "none") ? null : sortStrategies[sortValue];
+        localStorage.setItem("sort", sortValue);   
         refreshBoard();
     });
 }
@@ -380,8 +383,22 @@ let refreshBoard = async () => {
     await populateBoard();
 };
 
+let filterPrefs = localStorage.getItem('filter');
+let sortPrefs = localStorage.getItem('sort');
+
+if (filterPrefs !== null) {
+    filter = JSON.parse(filterPrefs);
+} 
+if (sortPrefs !== null) {
+    sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs];   
+}
+
+
 await populateBoard();
 
 mc.items.onCreated.addListener(refreshBoard);
 mc.items.onUpdated.addListener(refreshBoard);
 mc.items.onRemoved.addListener(refreshBoard);
+mc.calendars.onCreated.addListener(refreshBoard);
+mc.calendars.onUpdated.addListener(refreshBoard);
+mc.calendars.onRemoved.addListener(refreshBoard);
