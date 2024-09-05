@@ -321,86 +321,95 @@ let populateBoard = async () => {
     }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
-        const template = document.getElementById('cardTemplate');
-        const card = template.content.cloneNode(true).children[0];
-        //element.categories.forEach(cat => categories.add(cat));
-        card.id = element.id;
-        card.addEventListener("dragstart", (event) => {
-            event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
-            event.dataTransfer.dropEffect = "move";
-        });
-        let calendar = await mc.calendars.get(element.calendarId);
-        card.style.borderColor = calendar.color;
-        card.querySelector('.bi-circle-fill').style.color = calendar.color;
-        card.querySelector('.card-title').appendChild( 
-            document.createTextNode(' ' + element.title)
-        );
-        card.querySelector('.card-text').textContent = element.description;
+        // we need to filter out if element is already on the board
+        if (document.getElementById(element.id) === null) {
+            const template = document.getElementById('cardTemplate');
+            const card = template.content.cloneNode(true).children[0];
+            //element.categories.forEach(cat => categories.add(cat));
+            card.id = element.id;
+            card.addEventListener("dragstart", (event) => {
+                event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
+                event.dataTransfer.dropEffect = "move";
+            });
+            let calendar = await mc.calendars.get(element.calendarId);
+            card.style.borderColor = calendar.color;
+            card.querySelector('.bi-circle-fill').style.color = calendar.color;
+            card.querySelector('.card-title').appendChild( 
+                document.createTextNode(' ' + element.title)
+            );
+            card.querySelector('.card-text').textContent = element.description;
 
-        let cardFooter = card.querySelector('.card-footer');
-        if (element.dueDate) {
-            let cardDueDate = document.createElement('span');
-            cardDueDate.classList.add('bi-calendar-week-fill');
-            cardFooter.appendChild(cardDueDate);
-            cardFooter.appendChild(document.createTextNode(' '+parseICalDate(element.dueDate).toLocaleString()+' '));
-            if (element.status !== 'COMPLETED' && Date.now() > parseICalDate(element.dueDate)) {
-                cardFooter.classList.add('text-danger');
-                cardFooter.style.fontWeight = 'bold';
+            let cardFooter = card.querySelector('.card-footer');
+            if (element.dueDate) {
+                let cardDueDate = document.createElement('span');
+                cardDueDate.classList.add('bi-calendar-week-fill');
+                cardFooter.appendChild(cardDueDate);
+                cardFooter.appendChild(document.createTextNode(' '+parseICalDate(element.dueDate).toLocaleString()+' '));
+                if (element.status !== 'COMPLETED' && Date.now() > parseICalDate(element.dueDate)) {
+                    cardFooter.classList.add('text-danger');
+                    cardFooter.style.fontWeight = 'bold';
+                }
+            } else {
+                cardFooter.classList.add('text-muted');
             }
-        } else {
-            cardFooter.classList.add('text-muted');
-        }
-        if (element.percent && element.status === "IN-PROCESS") {
-            let cardPercent = document.createElement('span');
-            cardPercent.classList.add('bi-graph-up');
-            cardFooter.appendChild(cardPercent);
-            cardFooter.appendChild(document.createTextNode(' '+element.percent + '% '));
-        }
-        if (element.categories && element.categories.length > 0) {
-            let cardCategories = document.createElement('span');
-            cardCategories.classList.add('bi-tags-fill');
-            cardFooter.appendChild(cardCategories);
-            cardFooter.appendChild(document.createTextNode(' '+element.categories.join(', ')));
-        }
+            if (element.percent && element.status === "IN-PROCESS") {
+                let cardPercent = document.createElement('span');
+                cardPercent.classList.add('bi-graph-up');
+                cardFooter.appendChild(cardPercent);
+                cardFooter.appendChild(document.createTextNode(' '+element.percent + '% '));
 
-        if (element.priority) {
-            let cardPriority = document.createElement('span');
-            switch(element.priority) {
-                case 1:
-                    cardPriority.classList.add('bi-caret-up-fill');
-                    cardPriority.style.color = 'red';
-                    break;
-                case 9:
-                    cardPriority.classList.add('bi-caret-down-fill');
-                    cardPriority.style.color = 'green';
-                    break;
-                default:
-                    cardPriority.classList.add('bi-caret-right-fill');
-                    cardPriority.style.color = 'black';
+                card.querySelector('.progress').hidden=false;
+                let cardProgress = card.querySelector('.progress-bar');
+                //cardProgress.display="block";
+                cardProgress.style.width=''+element.percent+'%';
+                cardProgress.style.background=calendar.color;
             }
-            cardPriority.style.float = 'right';
-            cardFooter.appendChild(cardPriority);
+            if (element.categories && element.categories.length > 0) {
+                let cardCategories = document.createElement('span');
+                cardCategories.classList.add('bi-tags-fill');
+                cardFooter.appendChild(cardCategories);
+                cardFooter.appendChild(document.createTextNode(' '+element.categories.join(', ')));
+            }
+
+            if (element.priority) {
+                let cardPriority = document.createElement('span');
+                switch(element.priority) {
+                    case 1:
+                        cardPriority.classList.add('bi-caret-up-fill');
+                        cardPriority.style.color = 'red';
+                        break;
+                    case 9:
+                        cardPriority.classList.add('bi-caret-down-fill');
+                        cardPriority.style.color = 'green';
+                        break;
+                    default:
+                        cardPriority.classList.add('bi-caret-right-fill');
+                        cardPriority.style.color = 'black';
+                }
+                cardPriority.style.float = 'right';
+                cardFooter.appendChild(cardPriority);
+            }
+
+            let cardActionEdit = card.querySelector('.bi-pencil-fill');
+            cardActionEdit.dataset.id = element.id;
+            cardActionEdit.dataset.calendarId = element.calendarId;
+
+            let cardActionDelete = card.querySelector('.bi-trash3-fill');
+            cardActionDelete.dataset.id = element.id;
+            cardActionDelete.dataset.calendarId = element.calendarId;
+            cardActionDelete.addEventListener('click', async (event) => {
+                confirm("Are you sure you want to delete this item?") &&
+                    await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
+            });
+
+            let list = document.getElementById(element.status);
+            counts[element.status] += 1;
+            
+            list.appendChild(card);
+            document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
+            document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
+            document.getElementById("completed-count").textContent = counts["COMPLETED"];
         }
-
-        let cardActionEdit = card.querySelector('.bi-pencil-fill');
-        cardActionEdit.dataset.id = element.id;
-        cardActionEdit.dataset.calendarId = element.calendarId;
-
-        let cardActionDelete = card.querySelector('.bi-trash3-fill');
-        cardActionDelete.dataset.id = element.id;
-        cardActionDelete.dataset.calendarId = element.calendarId;
-        cardActionDelete.addEventListener('click', async (event) => {
-            confirm("Are you sure you want to delete this item?") &&
-                await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
-        });
-
-        let list = document.getElementById(element.status);
-        counts[element.status] += 1;
-        
-        list.appendChild(card);
-        document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
-        document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
-        document.getElementById("completed-count").textContent = counts["COMPLETED"];
     });
 
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
@@ -408,9 +417,15 @@ let populateBoard = async () => {
     document.getElementById("completed-count").textContent = counts["COMPLETED"];
 };
 
+let inRefresh = false;
+
 let refreshBoard = async () => {
-    clearBoard();
-    await populateBoard();
+    if (!inRefresh) {
+        inRefresh = true;
+        clearBoard();
+        await populateBoard();
+        inRefresh = false;
+    }
 };
 
 /*let filterPrefs = browser.storage.local.getItem('filter');
@@ -430,9 +445,14 @@ if (sortPrefs["icanban-sort"] !== undefined) {
 
 await populateBoard();
 
+// is this something that should be broke down so that we have a finer control, 
+// event by event? 
+// the recurring bug in displaying unique events seems to be advocate to this
+// direction
 mc.items.onCreated.addListener(refreshBoard);
 mc.items.onUpdated.addListener(refreshBoard);
 mc.items.onRemoved.addListener(refreshBoard);
+
 mc.calendars.onCreated.addListener(refreshBoard);
 mc.calendars.onUpdated.addListener(refreshBoard);
 mc.calendars.onRemoved.addListener(refreshBoard);
