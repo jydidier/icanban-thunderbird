@@ -207,7 +207,7 @@ if (applyFilterButton) {
             filter.priority = priorities[0];
         }
 
-        browser.storage.local.setItem("filter", JSON.stringify(filter));
+        await browser.storage.local.set({"icanban-filter": filter});
         refreshBoard();
     });
 }
@@ -256,7 +256,7 @@ if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];
-        browser.storage.local.setItem("sort", sortValue);   
+        await browser.storage.local.set({ "icanban-sort": sortValue} );   
         refreshBoard();
     });
 }
@@ -269,7 +269,7 @@ if (sortModal) {
             let sortValue = Object.keys(sortStrategies).find(key => sortStrategies[key] === sort);
             document.getElementById(sortValue).checked = true;
         } else {
-            document.getElementById('none').checked = true;
+            document.getElementById('nonePriority').checked = true;
         }
     });
 }
@@ -413,14 +413,18 @@ let refreshBoard = async () => {
     await populateBoard();
 };
 
-let filterPrefs = browser.storage.local.getItem('filter');
-let sortPrefs = browser.storage.local.getItem('sort');
+/*let filterPrefs = browser.storage.local.getItem('filter');
+let sortPrefs = browser.storage.local.getItem('sort');*/
 
-if (filterPrefs !== null) {
-    filter = JSON.parse(filterPrefs);
+let filterPrefs = await browser.storage.local.get("icanban-filter");
+let sortPrefs = await browser.storage.local.get("icanban-sort");
+console.log(filterPrefs,sortPrefs);
+
+if (filterPrefs["icanban-filter"] !== undefined) {
+    filter = filterPrefs["icanban-filter"];
 } 
-if (sortPrefs !== null) {
-    sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs];   
+if (sortPrefs["icanban-sort"] !== undefined) {
+    sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs["icanban-sort"]];   
 }
 
 
