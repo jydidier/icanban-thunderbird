@@ -77,6 +77,7 @@
         "menus",
         "menus.overrideContext",
         "cookies",
+        "storage",
         "theme"
       ]
 

@@ -163,6 +163,15 @@ if (filterModal) {
             filterList.appendChild(filterItem);
         });
 
+        if (filter.calendarId && filter.calendarId.length > 0) {
+            allCalendars.checked = false;
+        }
+
+        if (filter.priority !== undefined) {
+            allPriorities.checked = false;
+            document,querySelector(`#priorityList input[value=${filter.priority}]`).checked = true;
+        }
+
         let checkboxesCal = document.querySelectorAll('#calendarList input');
         checkboxesCal.forEach(checkbox => {
             checkbox.disabled = allCalendars.checked;
@@ -198,7 +207,7 @@ if (applyFilterButton) {
             filter.priority = priorities[0];
         }
 
-        localStorage.setItem("filter", JSON.stringify(filter));
+        browser.storage.local.setItem("filter", JSON.stringify(filter));
         refreshBoard();
     });
 }
@@ -247,7 +256,28 @@ if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];
-        localStorage.setItem("sort", sortValue);   
+        browser.storage.local.setItem("sort", sortValue);   
+        refreshBoard();
+    });
+}
+
+const sortModal = document.getElementById('sortModal');
+if (sortModal) {
+    sortModal.addEventListener('show.bs.modal', async (event) => {
+        document.querySelectorAll('#sortList input').forEach(input => { input.checked = false; });
+        if (sort) {
+            let sortValue = Object.keys(sortStrategies).find(key => sortStrategies[key] === sort);
+            document.getElementById(sortValue).checked = true;
+        } else {
+            document.getElementById('none').checked = true;
+        }
+    });
+}
+
+/* refresh button */
+const refreshButton = document.getElementById('refreshButton');
+if (refreshButton) {
+    refreshButton.addEventListener('click', async (event) => {
         refreshBoard();
     });
 }
@@ -383,8 +413,8 @@ let refreshBoard = async () => {
     await populateBoard();
 };
 
-let filterPrefs = localStorage.getItem('filter');
-let sortPrefs = localStorage.getItem('sort');
+let filterPrefs = browser.storage.local.getItem('filter');
+let sortPrefs = browser.storage.local.getItem('sort');
 
 if (filterPrefs !== null) {
     filter = JSON.parse(filterPrefs);
