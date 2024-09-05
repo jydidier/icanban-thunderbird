@@ -113,8 +113,8 @@ if (taskModal) {
         document.getElementById('taskTitle').value = item.title;
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
-        document.getElementById('taskDueDate').value = item.duedate?
-            parseICalDate(item.dueDate).toISOString().slice(0,16):'';        
+        document.getElementById('taskDueDate').value = item.dueDate?
+            convertDatetoISOLocaleString(parseICalDate(item.dueDate)).slice(0,16):'';        
         document.getElementById('taskPercentComplete').value = item.percent;
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
@@ -289,6 +289,14 @@ let clearBoard = () => {
     document.getElementById("COMPLETED").innerHTML = "";
 };
 
+const convertDatetoISOLocaleString = (date) => {
+    return String(date.getFullYear()).padStart(4,'0') + '-' + 
+        String(date.getMonth()).padStart(2,'0') + '-' + 
+        String(date.getDate()).padStart(2,'0') + 'T' + 
+        String(date.getHours()).padStart(2,'0') + ':' + 
+        String(date.getMinutes()).padStart(2,'0');    
+}
+
 const convertDateTimeField = (date) => {
     return date.substr(0, 4) + 
         date.substr(5, 2) +
@@ -428,12 +436,8 @@ let refreshBoard = async () => {
     }
 };
 
-/*let filterPrefs = browser.storage.local.getItem('filter');
-let sortPrefs = browser.storage.local.getItem('sort');*/
-
 let filterPrefs = await browser.storage.local.get("icanban-filter");
 let sortPrefs = await browser.storage.local.get("icanban-sort");
-console.log(filterPrefs,sortPrefs);
 
 if (filterPrefs["icanban-filter"] !== undefined) {
     filter = filterPrefs["icanban-filter"];
@@ -445,10 +449,6 @@ if (sortPrefs["icanban-sort"] !== undefined) {
 
 await populateBoard();
 
-// is this something that should be broke down so that we have a finer control, 
-// event by event? 
-// the recurring bug in displaying unique events seems to be advocate to this
-// direction
 mc.items.onCreated.addListener(refreshBoard);
 mc.items.onUpdated.addListener(refreshBoard);
 mc.items.onRemoved.addListener(refreshBoard);
