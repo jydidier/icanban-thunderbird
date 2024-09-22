@@ -318,7 +318,7 @@ const parseICalDate = (date) => {
 }
 
 let populateBoard = async () => {
-    let items = (await mc.items.query(Object.assign({ type: "task"}, filter))).filter(item => {
+    let items = (await mc.items.query(Object.assign({ type: "task", returnFormat: "jcal"}, filter))).filter(item => {
         if (filter.priority !== undefined && item.priority !== filter.priority) {
             return false;
         }   
@@ -329,6 +329,7 @@ let populateBoard = async () => {
     }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
+        console.log("jcal", element);
         // we need to filter out if element is already on the board
         if (document.getElementById(element.id) === null) {
             const template = document.getElementById('cardTemplate');

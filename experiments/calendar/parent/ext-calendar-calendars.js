@@ -19,7 +19,7 @@ this.calendar_calendars = class extends ExtensionAPI {
     return {
       calendar: {
         calendars: {
-          async query({ type, url, name, color, readOnly, enabled }) {
+          async query({ type, url, name, color, readOnly, enabled, visible }) {
             const calendars = cal.manager.getCalendars();
 
             let pattern = null;
@@ -56,6 +56,10 @@ this.calendar_calendars = class extends ExtensionAPI {
                   matches = false;
                 }
 
+                if (visible != null & calendar.getProperty("calendar-main-in-composite") != visible) {
+                  matches = false;
+                }
+
                 if (readOnly != null && calendar.readOnly != readOnly) {
                   matches = false;
                 }
@@ -65,7 +69,6 @@ this.calendar_calendars = class extends ExtensionAPI {
               .map(calendar => convertCalendar(context.extension, calendar));
           },
           async get(id) {
-            // TODO find a better way to determine cache id
             if (id.endsWith("#cache")) {
               const calendar = unwrapCalendar(cal.manager.getCalendarById(id.substring(0, id.length - 6)));
               const own = calendar.offlineStorage && isOwnCalendar(calendar, context.extension);
@@ -86,6 +89,12 @@ this.calendar_calendars = class extends ExtensionAPI {
             calendar.name = createProperties.name;
             if (typeof createProperties.color != "undefined") {
               calendar.setProperty("color", createProperties.color);
+            }
+            if (typeof createProperties.visible != "undefined") {
+              calendar.setProperty("calendar-main-in-composite", createProperties.visible);
+            }
+            if (typeof createProperties.showReminders != "undefined") {
+              calendar.setProperty("suppressAlarms", !createProperties.showReminders);
             }
 
             cal.manager.registerCalendar(calendar);
@@ -114,6 +123,14 @@ this.calendar_calendars = class extends ExtensionAPI {
               calendar.setProperty("disabled", !updateProperties.enabled);
             }
 
+            if (updateProperties.visible != null) {
+              calendar.setProperty("calendar-main-in-composite", updateProperties.visible);
+            }
+
+            if (updateProperties.showReminders != null) {
+              calendar.setProperty("suppressAlarms", !updateProperties.showReminders);
+            }
+
             for (const prop of ["readOnly", "name", "color"]) {
               if (updateProperties[prop] != null) {
                 calendar.setProperty(prop, updateProperties[prop]);
@@ -124,6 +141,7 @@ this.calendar_calendars = class extends ExtensionAPI {
               // TODO validate capability names
               const unwrappedCalendar = calendar.wrappedJSObject.mUncachedCalendar.wrappedJSObject;
               unwrappedCalendar.capabilities = Object.assign({}, unwrappedCalendar.capabilities, updateProperties.capabilities);
+              calendar.setProperty("extensionCapabilities", JSON.stringify(unwrappedCalendar.capabilities));
             }
 
             if (updateProperties.lastError !== undefined) {
@@ -236,6 +254,12 @@ this.calendar_calendars = class extends ExtensionAPI {
                       break;
                     case "uri":
                       fire.sync(converted, { url: value?.spec });
+                      break;
+                    case "suppressAlarms":
+                      fire.sync(converted, { showReminders: !value });
+                      break;
+                    case "calendar-main-in-composite":
+                      fire.sync(converted, { visible: value });
                       break;
                     case "disabled":
                       fire.sync(converted, { enabled: !value });
