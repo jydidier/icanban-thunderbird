@@ -26,10 +26,10 @@ const TodoProperties = {
     'description' : { type: 'text', unique: true},
     'dtstart' : { type: 'date-time', unique: true},
     //'geo': { type: /* array of 2 floats */, unique: true},
-    'last-mod' : { type: 'date-time', unique: true},
+    'last-modified' : { type: 'date-time', unique: true},
     'location' : { type: 'text', unique : true},
     //'organizer' : { type: 'cal-address', unique: true},
-    'percent' : { type: 'integer', unique: true},
+    'percent-complete' : { type: 'integer', unique: true},
     'priority' : { type: 'integer', unique: true},
     //'recurid'
     //'seq'
@@ -52,7 +52,14 @@ const TodoProperties = {
     //'rdate'
     //'x-prop'
     //'iana-prop'
-}
+};
+
+
+const toCamelCase = (inp) => {
+    return inp.replace(/-([a-z])/g, function(k){
+        return k[1].toUpperCase();
+    });
+};
 
 
 class Component {
@@ -73,12 +80,19 @@ class Component {
     first(type) {
         if (this.#data[2].length > 0) {
             if (type) {
+                let result = null;
                 this.#data[2].forEach(element => {
                     if (element[0] === type) {
-                        return new Component(element);
+                        switch (type) {
+                            case 'vtodo':
+                                result = new Todo(element);
+                                break;
+                            default:
+                                result = new Component(element);
+                        }
                     }
                 });
-                return null;
+                return result;
             } else {
                 return new Component(this.#data[2][0]);
             }
@@ -89,34 +103,36 @@ class Component {
 
 class Todo extends Component {
     constructor(data) {
-        let self = this;
         if (data) {
             super(data);
         } else {
             super('vtodo');
         }
+        let self = this;
 
-        for(element in TodoProperties) {
+        for(let element in TodoProperties) {
             if (TodoProperties.hasOwnProperty(element)) {
-                Object.defineProperty(self, element, {
-                    writable: true,
-                    get: function() { 
+                Object.defineProperty(self, toCamelCase(element), {
+                    get: function() {
+                        let result = null; 
                         self.data[1].forEach(elt => {
                             if (elt[0] === element) {
-                                return elt[3];
+                                result = elt[3];
                             }
                         });
-                        return null;
+                        return result;
                     },
                     set: function(value) {
+                        let updated = false;
                         self.data[1].forEach(elt => {
                             if (elt[0] === element) {
                                 elt[3] = value;
-                                return ;
+                                updated = true;
                             }
                         })
                         // TODO: check a little bit more what we are writing.
-                        self.data[1].push([element, {}, TodoProperties[element].type, value]);
+                        if (!updated)
+                            self.data[1].push([element, {}, TodoProperties[element].type, value]);
                     }
                 });
             }
@@ -124,4 +140,4 @@ class Todo extends Component {
     }
 }
 
-export default {Component, Todo};
+export {Component, Todo};

@@ -5,11 +5,23 @@
  */
 
 
+import * as JCAL from './jcal.js';
+
+console.log(JCAL);
+
 const mc = messenger.calendar;
 
 let filter = {};
 let sort = null;
 const categories = new Set();
+
+/* CONVERSION OF AN ITEM AS A TODO COMPONENT */
+
+const asTodo = (item) => {
+    const cmp = new JCAL.Component(item.item);
+    return cmp.first('vtodo');
+};
+
 
 /* DRAG'N DROP SETUP */
 let dragover = (event) => {
@@ -234,20 +246,40 @@ if (allPriorities) {
 
 const sortStrategies = {
     // priority values are inverted with 1 being the highest priority
-    "priorityASort": (a, b) => { 
-        a = a || 5; // none given is normal priority
-        b = b || 5;
+    "priorityASort": (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi); 
+        a.priority = a.priority || 5; // none given is normal priority
+        b.priority = b.priority || 5;
         return b.priority - a.priority;
     },
-    "priorityDSort": (a, b) => {
-        a = a || 5;
-        b = b || 5;
+    "priorityDSort": (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi);
+        a.priority = a.priority || 5;
+        b.priority = b.priority || 5;
         return a.priority - b.priority;
     },
-    "percentCompleteASort": (a, b) => a.percent - b.percent,
-    "percentCompleteDSort": (a, b) => b.percent - a.percent,
-    "dueDateASort" : (a, b) => new String(a.dueDate || '').localeCompare(b.dueDate || ''),
-    "dueDateDSort" : (a, b) => new String(b.dueDate || '').localeCompare(a.dueDate || ''),
+    "percentCompleteASort": (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi);
+        return a.percentComplete - b.percentComplete;
+    },
+    "percentCompleteDSort": (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi);
+        return b.percentComplete - a.percentComplete;
+    },
+    "dueDateASort" : (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi);
+        return new String(a.due || '').localeCompare(b.due || '');
+    },
+    "dueDateDSort" : (ai, bi) => {
+        const a = asTodo(ai);
+        const b = asTodo(bi);
+        return new String(b.due || '').localeCompare(a.due || '');
+    }
 }
 
 const applySortButton = document.getElementById('applySort');
@@ -319,7 +351,7 @@ const parseICalDate = (date) => {
 
 let populateBoard = async () => {
     let items = (await mc.items.query(Object.assign({ type: "task", returnFormat: "jcal"}, filter))).filter(item => {
-        if (filter.priority !== undefined && item.priority !== filter.priority) {
+        if (filter.priority !== undefined && asTodo(item).priority !== filter.priority) {
             return false;
         }   
         return true;
@@ -329,7 +361,8 @@ let populateBoard = async () => {
     }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
-        console.log("jcal", element);
+        let todo = asTodo(element);
+
         // we need to filter out if element is already on the board
         if (document.getElementById(element.id) === null) {
             const template = document.getElementById('cardTemplate');
@@ -341,48 +374,51 @@ let populateBoard = async () => {
                 event.dataTransfer.dropEffect = "move";
             });
             let calendar = await mc.calendars.get(element.calendarId);
+
+            //console.log('jcal calendar', calendar);
+
             card.style.borderColor = calendar.color;
             card.querySelector('.bi-circle-fill').style.color = calendar.color;
             card.querySelector('.card-title').appendChild( 
-                document.createTextNode(' ' + element.title)
+                document.createTextNode(' ' + todo.summary)
             );
-            card.querySelector('.card-text').textContent = element.description;
+            card.querySelector('.card-text').textContent = todo.description;
 
             let cardFooter = card.querySelector('.card-footer');
-            if (element.dueDate) {
+            if (todo.due) {
                 let cardDueDate = document.createElement('span');
                 cardDueDate.classList.add('bi-calendar-week-fill');
                 cardFooter.appendChild(cardDueDate);
-                cardFooter.appendChild(document.createTextNode(' '+parseICalDate(element.dueDate).toLocaleString()+' '));
-                if (element.status !== 'COMPLETED' && Date.now() > parseICalDate(element.dueDate)) {
+                cardFooter.appendChild(document.createTextNode(' '+ (new Date(todo.due)).toLocaleString()+' '));
+                if (element.status !== 'COMPLETED' && Date.now() > Date.parse(todo.due)) {
                     cardFooter.classList.add('text-danger');
                     cardFooter.style.fontWeight = 'bold';
                 }
             } else {
                 cardFooter.classList.add('text-muted');
             }
-            if (element.percent && element.status === "IN-PROCESS") {
+            if (todo.percentComplete && todo.status === "IN-PROCESS") {
                 let cardPercent = document.createElement('span');
                 cardPercent.classList.add('bi-graph-up');
                 cardFooter.appendChild(cardPercent);
-                cardFooter.appendChild(document.createTextNode(' '+element.percent + '% '));
+                cardFooter.appendChild(document.createTextNode(' '+todo.percentComplete + '% '));
 
                 card.querySelector('.progress').hidden=false;
                 let cardProgress = card.querySelector('.progress-bar');
                 //cardProgress.display="block";
-                cardProgress.style.width=''+element.percent+'%';
+                cardProgress.style.width=''+todo.percentComplete+'%';
                 cardProgress.style.background=calendar.color;
             }
-            if (element.categories && element.categories.length > 0) {
+            if (todo.categories && todo.categories.length > 0) {
                 let cardCategories = document.createElement('span');
                 cardCategories.classList.add('bi-tags-fill');
                 cardFooter.appendChild(cardCategories);
-                cardFooter.appendChild(document.createTextNode(' '+element.categories.join(', ')));
+                cardFooter.appendChild(document.createTextNode(' '+todo.categories.join(', ')));
             }
 
-            if (element.priority) {
+            if (todo.priority) {
                 let cardPriority = document.createElement('span');
-                switch(element.priority) {
+                switch(todo.priority) {
                     case 1:
                         cardPriority.classList.add('bi-caret-up-fill');
                         cardPriority.style.color = 'red';
@@ -411,8 +447,8 @@ let populateBoard = async () => {
                     await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
             });
 
-            let list = document.getElementById(element.status);
-            counts[element.status] += 1;
+            let list = document.getElementById(todo.status);
+            counts[todo.status] += 1;
             
             list.appendChild(card);
             document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
