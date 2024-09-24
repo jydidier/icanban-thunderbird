@@ -3,19 +3,18 @@
 // however, the remaining ones are needed.
 // basically, we need to be able to make things with a vtodo
 
-
-/*const JCALCalendarProperties = [
-    'calscale', //opt, unique
-    'method', //opt, unique
-    'prodid', //req, unique
-    'version', //req, unique
-]*/
-
 const Types = [
     'binary', 'boolean', 'cal-address', 'date', 'date-time', 'duration', 
     'float', 'integer', 'period', 'recur', 'text', 'time', 'uri', 'utc-offset',
     'x-type'
 ];
+
+const CalendarProperties = {
+    'calscale' : { type: 'text', unique: true},
+    'method' : { type: 'text', unique: true},
+    'prodid' : { type: 'text', required: true, unique: true},
+    'version' : { type: 'text', required: true, unique: true}
+};
 
 const TodoProperties = {
     'dtstamp' : { type: 'date-time', required: true, unique: true},
@@ -99,19 +98,11 @@ class Component {
         }
         return null;
     }
-}
 
-class Todo extends Component {
-    constructor(data) {
-        if (data) {
-            super(data);
-        } else {
-            super('vtodo');
-        }
+    generateProperties(properties) {
         let self = this;
-
-        for(let element in TodoProperties) {
-            if (TodoProperties.hasOwnProperty(element)) {
+        for(let element in properties) {
+            if (properties.hasOwnProperty(element)) {
                 Object.defineProperty(self, toCamelCase(element), {
                     get: function() {
                         let result = null; 
@@ -132,12 +123,42 @@ class Todo extends Component {
                         })
                         // TODO: check a little bit more what we are writing.
                         if (!updated)
-                            self.data[1].push([element, {}, TodoProperties[element].type, value]);
+                            self.data[1].push([element, {}, properties[element].type, value]);
                     }
                 });
             }
         }
+
+    }
+
+    addComponent(component) {
+        this.#data[2].push(component.data);
     }
 }
+
+class Todo extends Component {
+    constructor(data) {
+        if (data) {
+            super(data);
+        } else {
+            super('vtodo');
+        }
+        this.generateProperties(TodoProperties);
+    }
+
+    addComponent(component) {} // does nothing since a todo cannot have components
+}
+
+class Calendar extends Component {
+    constructor(data) {
+        if (data) {
+            super(data);
+        } else {
+            super('vcalendar');
+        }
+        this.generateProperties(CalendarProperties);
+    }
+}
+
 
 export {Component, Todo};

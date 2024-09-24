@@ -7,8 +7,6 @@
 
 import * as JCAL from './jcal.js';
 
-console.log(JCAL);
-
 const mc = messenger.calendar;
 
 let filter = {};
@@ -18,7 +16,7 @@ const categories = new Set();
 /* CONVERSION OF AN ITEM AS A TODO COMPONENT */
 
 const asTodo = (item) => {
-    const cmp = new JCAL.Component(item.item);
+    const cmp = new JCAL.Component(item.formats.jcal);
     return cmp.first('vtodo');
 };
 
@@ -68,32 +66,34 @@ const saveTask = async () => {
     let newCalendarId = document.getElementById('taskCalendar').value;
 
     //let item = await mc.items.get(calendarId, id);
-    let item = {};
+    let item = new JCAL.Todo();
     if (title)
-        item.title = title;
+        item.summary = title;
     if (description)
         item.description = description;
     if (dueDate) {
-        item.dueDate = convertDateTimeField(dueDate);
+        item.due = dueDate; //convertDateTimeField(dueDate);
     }
     if (percent) {
-        item.percent = parseInt(percent);
+        item.percentComplete = parseInt(percent);
     }
     if (priority) {
         item.priority = parseInt(priority);
     }
     item.status = status;
 
+    console.log(item.data);
+    // do we need a calendar shell to the vtodo item?
 
     if (id !== "null") {
-        await mc.items.update(calendarId, id, item);
+        await mc.items.update(calendarId, id, {format: 'jcal', item: item.data});
 
         if (calendarId !== newCalendarId) {
             await mc.items.move(calendarId, newCalendarId, id);
         }
     } else {
         item.type="task";
-        await mc.items.create(newCalendarId, item);
+        await mc.items.create(newCalendarId, {format: 'jcal', item: item.data});
     }
 }
 
@@ -115,19 +115,20 @@ if (taskModal) {
         };
 
         if (id) {
-            item = await mc.items.get(calendarId, id);            
+            let cmp = await mc.items.get(calendarId, id, { returnFormat: "jcal" });
+            item = asTodo(cmp);
             document.getElementById('taskModalColor').style.color = (await mc.calendars.get(calendarId)).color;
-            document.getElementById('taskModalLabel').textContent = item.title;
+            document.getElementById('taskModalLabel').textContent = item.summary;
         } else {
             document.getElementById('taskModalColor').style.color = "black";
             document.getElementById('taskModalLabel').textContent = "New task...";
         }
-        document.getElementById('taskTitle').value = item.title;
+        document.getElementById('taskTitle').value = item.summary;
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
-        document.getElementById('taskDueDate').value = item.dueDate?
-            convertDatetoISOLocaleString(parseICalDate(item.dueDate)).slice(0,16):'';        
-        document.getElementById('taskPercentComplete').value = item.percent;
+        document.getElementById('taskDueDate').value = item.due?item.due:'';
+            //convertDatetoISOLocaleString(parseICalDate(item.due)).slice(0,16):'';        
+        document.getElementById('taskPercentComplete').value = item.percentComplete;
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
         taskModal.dataset.calendarId = calendarId;
@@ -361,6 +362,7 @@ let populateBoard = async () => {
     }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
+        console.log('element', element);    
         let todo = asTodo(element);
 
         // we need to filter out if element is already on the board
