@@ -158,7 +158,13 @@ class Calendar extends Component {
         }
         this.generateProperties(CalendarProperties);
     }
+
+    static default() {
+        let cal = new Calendar();
+        cal.prodid = '-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN';
+        cal.version = '2.0';
+        return cal;
+    }
 }
 
-
-export {Component, Todo};
+export {Component, Calendar, Todo};

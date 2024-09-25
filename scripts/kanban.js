@@ -16,8 +16,15 @@ const categories = new Set();
 /* CONVERSION OF AN ITEM AS A TODO COMPONENT */
 
 const asTodo = (item) => {
-    const cmp = new JCAL.Component(item.formats.jcal);
-    return cmp.first('vtodo');
+    if (item.formats){
+        const cmp = new JCAL.Component(item.formats.jcal);
+        return cmp.first('vtodo');
+    }
+    if (item.format === 'jcal') {
+        const cmp = new JCAL.Component(item.item);
+        return cmp.first('vtodo');
+    }
+    return null;
 };
 
 
@@ -72,7 +79,7 @@ const saveTask = async () => {
     if (description)
         item.description = description;
     if (dueDate) {
-        item.due = dueDate; //convertDateTimeField(dueDate);
+        item.due = (new Date(dueDate)).toISOString(); //convertDateTimeField(dueDate);
     }
     if (percent) {
         item.percentComplete = parseInt(percent);
@@ -82,10 +89,8 @@ const saveTask = async () => {
     }
     item.status = status;
 
-    console.log(item.data);
-    // do we need a calendar shell to the vtodo item?
-
     if (id !== "null") {
+        item.uid = id;
         await mc.items.update(calendarId, id, {format: 'jcal', item: item.data});
 
         if (calendarId !== newCalendarId) {
@@ -93,7 +98,7 @@ const saveTask = async () => {
         }
     } else {
         item.type="task";
-        await mc.items.create(newCalendarId, {format: 'jcal', item: item.data});
+        await mc.items.create(newCalendarId, {type: 'task', format: 'jcal', item: item.data});
     }
 }
 
@@ -106,10 +111,10 @@ if (taskModal) {
         const id = source.dataset.id || null;
         const calendarId = source.dataset.calendarId || null;
         let item = {
-            title: "",
+            summary: "",
             description: "",
-            dueDate: "",
-            percent: 0,
+            due: "",
+            percentComplete: 0,
             status: "NEEDS-ACTION",
             priority: 0
         };
@@ -127,7 +132,6 @@ if (taskModal) {
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
         document.getElementById('taskDueDate').value = item.due?item.due:'';
-            //convertDatetoISOLocaleString(parseICalDate(item.due)).slice(0,16):'';        
         document.getElementById('taskPercentComplete').value = item.percentComplete;
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
@@ -322,34 +326,6 @@ let clearBoard = () => {
     document.getElementById("COMPLETED").innerHTML = "";
 };
 
-const convertDatetoISOLocaleString = (date) => {
-    return String(date.getFullYear()).padStart(4,'0') + '-' + 
-        String(date.getMonth()+1).padStart(2,'0') + '-' + 
-        String(date.getDate()).padStart(2,'0') + 'T' + 
-        String(date.getHours()).padStart(2,'0') + ':' + 
-        String(date.getMinutes()).padStart(2,'0');    
-}
-
-const convertDateTimeField = (date) => {
-    return date.substr(0, 4) + 
-        date.substr(5, 2) +
-        date.substr(8, 2) +
-        'T' +
-        date.substr(11, 2) +
-        date.substr(14, 2) +
-        '00';
-}
-
-const parseICalDate = (date) => {
-    const year = date.substr(0, 4);
-    const month = parseInt(date.substr(4, 2), 10) - 1;
-    const day = date.substr(6, 2);
-    const hour = date.substr(9, 2);
-    const minute = date.substr(11, 2);
-    const second = date.substr(13, 2);
-    return new Date(year, month, day, hour, minute, second);
-}
-
 let populateBoard = async () => {
     let items = (await mc.items.query(Object.assign({ type: "task", returnFormat: "jcal"}, filter))).filter(item => {
         if (filter.priority !== undefined && asTodo(item).priority !== filter.priority) {
@@ -362,7 +338,7 @@ let populateBoard = async () => {
     }
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
     items.forEach(async element => {
-        console.log('element', element);    
+        //console.log('element', element);    
         let todo = asTodo(element);
 
         // we need to filter out if element is already on the board
@@ -391,8 +367,12 @@ let populateBoard = async () => {
                 let cardDueDate = document.createElement('span');
                 cardDueDate.classList.add('bi-calendar-week-fill');
                 cardFooter.appendChild(cardDueDate);
-                cardFooter.appendChild(document.createTextNode(' '+ (new Date(todo.due)).toLocaleString()+' '));
-                if (element.status !== 'COMPLETED' && Date.now() > Date.parse(todo.due)) {
+                cardFooter.appendChild(
+                    document.createTextNode(
+                        ` ${(new Date(todo.due)).toLocaleString()} `
+                    )
+                );
+                if (todo.status !== 'COMPLETED' && Date.now() > Date.parse(todo.due)) {
                     cardFooter.classList.add('text-danger');
                     cardFooter.style.fontWeight = 'bold';
                 }
@@ -407,7 +387,6 @@ let populateBoard = async () => {
 
                 card.querySelector('.progress').hidden=false;
                 let cardProgress = card.querySelector('.progress-bar');
-                //cardProgress.display="block";
                 cardProgress.style.width=''+todo.percentComplete+'%';
                 cardProgress.style.background=calendar.color;
             }
