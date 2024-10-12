@@ -7,7 +7,14 @@
 
 import * as JCAL from './jcal.js';
 
-const mc = messenger.calendar;
+let mc = {};
+
+if (globalThis.messenger !== undefined) {
+    mc = messenger.calendar;
+} else {
+    mc = await import('./calendar_front.js');
+    console.log(mc);
+}
 
 let filter = {};
 let sort = null;
@@ -45,8 +52,9 @@ let drop = async (event) => {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
         /* necessary as an instant feedback for the user */
         target.appendChild(document.getElementById(data.id));
-
-        await mc.items.update(data.calendarId, data.id, { status: target.id });
+        let jtodo = new JCAL.Todo();
+        jtodo.status = target.id;
+        await mc.items.update(data.calendarId, data.id, { format: "jcal", item: jtodo.data });
     }
 };
 
@@ -224,7 +232,11 @@ if (applyFilterButton) {
             filter.priority = priorities[0];
         }
 
-        await browser.storage.local.set({"icanban-filter": filter});
+        if( globalThis.browser !== undefined) {
+            await browser.storage.local.set({"icanban-filter": filter});
+        } else {
+            localStorage.setItem("icanban-filter", JSON.stringify(filter));
+        }
         refreshBoard();
     });
 }
@@ -278,12 +290,12 @@ const sortStrategies = {
     "dueDateASort" : (ai, bi) => {
         const a = asTodo(ai);
         const b = asTodo(bi);
-        return new String(a.due || '').localeCompare(b.due || '');
+        return (new String(a.due || '')).localeCompare(b.due || '');
     },
     "dueDateDSort" : (ai, bi) => {
         const a = asTodo(ai);
         const b = asTodo(bi);
-        return new String(b.due || '').localeCompare(a.due || '');
+        return (new String(b.due || '')).localeCompare(a.due || '');
     }
 }
 
@@ -293,7 +305,15 @@ if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];
-        await browser.storage.local.set({ "icanban-sort": sortValue} );   
+        if( globalThis.browser !== undefined) {
+            console.log( 'setting sort (browser)', sortValue);
+            await browser.storage.local.set({ "icanban-sort": sortValue} );   
+        } else {
+            console.log( 'setting sort', sortValue);
+            localStorage.setItem("icanban-sort", JSON.stringify(sortValue));
+            console.log('stored in local storage', localStorage.getItem("icanban-sort"));
+        }
+        console.log('defined sort', sort);
         refreshBoard();
     });
 }
@@ -315,7 +335,7 @@ if (sortModal) {
 const refreshButton = document.getElementById('refreshButton');
 if (refreshButton) {
     refreshButton.addEventListener('click', async (event) => {
-        refreshBoard();
+        await refreshBoard();
     });
 }
 
@@ -331,14 +351,17 @@ let populateBoard = async () => {
         if (filter.priority !== undefined && asTodo(item).priority !== filter.priority) {
             return false;
         }   
+        if (!globalThis.browser && filter.calendarId !== undefined && !filter.calendarId.includes(item.calendarId)) {
+            return false;
+        }
         return true;
     });
     if (sort) {
         items.sort(sort);
     }
+
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
-    items.forEach(async element => {
-        //console.log('element', element);    
+    for(const element of items) {
         let todo = asTodo(element);
 
         // we need to filter out if element is already on the board
@@ -358,9 +381,9 @@ let populateBoard = async () => {
             card.style.borderColor = calendar.color;
             card.querySelector('.bi-circle-fill').style.color = calendar.color;
             card.querySelector('.card-title').appendChild( 
-                document.createTextNode(' ' + todo.summary)
+                document.createTextNode(' ' + todo.summary + ' ')
             );
-            card.querySelector('.card-text').textContent = todo.description;
+            card.querySelector('.card-text').innerHTML = todo.description?.replace(/\n/g, '<br>') || '';
 
             let cardFooter = card.querySelector('.card-footer');
             if (todo.due) {
@@ -436,7 +459,7 @@ let populateBoard = async () => {
             document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
             document.getElementById("completed-count").textContent = counts["COMPLETED"];
         }
-    });
+    }
 
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
     document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
@@ -446,6 +469,7 @@ let populateBoard = async () => {
 let inRefresh = false;
 
 let refreshBoard = async () => {
+    console.log('refreshing board');
     if (!inRefresh) {
         inRefresh = true;
         clearBoard();
@@ -454,8 +478,17 @@ let refreshBoard = async () => {
     }
 };
 
-let filterPrefs = await browser.storage.local.get("icanban-filter");
-let sortPrefs = await browser.storage.local.get("icanban-sort");
+
+let filterPrefs = {};
+let sortPrefs = {};
+if (globalThis.browser !== undefined) {
+    filterPrefs = await browser.storage.local.get("icanban-filter");
+    sortPrefs = await browser.storage.local.get("icanban-sort");
+} else {
+    filterPrefs["icanban-filter"] = JSON.parse(localStorage.getItem("icanban-filter")) ?? undefined;
+    sortPrefs["icanban-sort"] = JSON.parse(localStorage.getItem("icanban-sort")) ?? undefined;
+
+}
 
 if (filterPrefs["icanban-filter"] !== undefined) {
     filter = filterPrefs["icanban-filter"];
@@ -467,10 +500,22 @@ if (sortPrefs["icanban-sort"] !== undefined) {
 
 await populateBoard();
 
-mc.items.onCreated.addListener(refreshBoard);
-mc.items.onUpdated.addListener(refreshBoard);
-mc.items.onRemoved.addListener(refreshBoard);
+if (globalThis.messenger !== undefined) {
+    mc.items.onCreated.addListener(refreshBoard);
+    mc.items.onUpdated.addListener(refreshBoard);
+    mc.items.onRemoved.addListener(refreshBoard);
 
-mc.calendars.onCreated.addListener(refreshBoard);
-mc.calendars.onUpdated.addListener(refreshBoard);
-mc.calendars.onRemoved.addListener(refreshBoard);
+    mc.calendars.onCreated.addListener(refreshBoard);
+    mc.calendars.onUpdated.addListener(refreshBoard);
+    mc.calendars.onRemoved.addListener(refreshBoard);
+} else {
+    console.log("preparing events");
+
+    mc.items.addEventListener("created",refreshBoard);
+    mc.items.addEventListener("updated",refreshBoard);
+    mc.items.addEventListener("removed",refreshBoard);
+
+    mc.calendars.addEventListener("created",refreshBoard);
+    mc.calendars.addEventListener("updated",refreshBoard);
+    mc.calendars.addEventListener("removed",refreshBoard);
+}

@@ -46,7 +46,7 @@ const TodoProperties = {
     //'contact'
     //'exdate'
     //'rstatus'
-    //'related'
+    //'related-to'
     //'resources'
     //'rdate'
     //'x-prop'
@@ -99,11 +99,21 @@ class Component {
         return null;
     }
 
+    merge(component) {
+        let entries = Object.entries(component);
+        entries.forEach(entry => {
+            if (entry[1] !== null && entry[0] !== 'data') {
+                this[entry[0]] = entry[1];
+            }
+        });
+    }
+
     generateProperties(properties) {
         let self = this;
         for(let element in properties) {
             if (properties.hasOwnProperty(element)) {
                 Object.defineProperty(self, toCamelCase(element), {
+                    enumerable: true,
                     get: function() {
                         let result = null; 
                         self.data[1].forEach(elt => {
