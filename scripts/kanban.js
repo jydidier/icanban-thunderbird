@@ -4,17 +4,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-
 import * as JCAL from './jcal.js';
 
-let mc = {};
-
-if (globalThis.messenger !== undefined) {
-    mc = messenger.calendar;
-} else {
-    mc = await import('./calendar_front.js');
-    console.log(mc);
-}
+let mc = (globalThis.messenger !== undefined) ?
+    messenger.calendar:(await import('./calendar_front.js'));
 
 let filter = {};
 let sort = null;
@@ -34,7 +27,6 @@ const asTodo = (item) => {
     return null;
 };
 
-
 /* DRAG'N DROP SETUP */
 let dragover = (event) => {
     event.preventDefault();
@@ -43,6 +35,7 @@ let dragover = (event) => {
 
 let drop = async (event) => {
     event.preventDefault();
+    console.log('dropped',event);
     let target = event.target;
     if (event.target.nodeName === "DIV") {
         target = event.target.querySelector('.kanban-list');
@@ -52,8 +45,10 @@ let drop = async (event) => {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
         /* necessary as an instant feedback for the user */
         target.appendChild(document.getElementById(data.id));
-        let jtodo = new JCAL.Todo();
+        let cmp = await mc.items.get(calendarId, id, { returnFormat: "jcal" });
+        let jtodo = asTodo(cmp);
         jtodo.status = target.id;
+        if (jtodo.status === "COMPLETED") { jtodo.percentComplete = 100; } else { jtodo.percentComplete = 0; }
         await mc.items.update(data.calendarId, data.id, { format: "jcal", item: jtodo.data });
     }
 };
@@ -80,19 +75,22 @@ const saveTask = async () => {
     let calendarId = taskModal.dataset.calendarId;
     let newCalendarId = document.getElementById('taskCalendar').value;
 
-    //let item = await mc.items.get(calendarId, id);
-    let item = new JCAL.Todo();
-    if (title)
+
+    let item = (id !== "null") ?
+        asTodo(await mc.items.get(calendarId, id, { returnFormat: "jcal" })) : 
+        new JCAL.Todo();   
+
+    if (title !== item.summary)
         item.summary = title;
-    if (description)
+    if (description !== item.description)
         item.description = description;
-    if (dueDate) {
-        item.due = (new Date(dueDate)).toISOString(); //convertDateTimeField(dueDate);
+    if (dueDate !== null && dueDate !== item.due) {
+        item.due = (new Date(dueDate)).toISOString(); 
     }
-    if (percent) {
+    if (percent !== item.percentComplete) {
         item.percentComplete = parseInt(percent);
     }
-    if (priority) {
+    if (priority !== item.priority) {
         item.priority = parseInt(priority);
     }
     item.status = status;
@@ -111,7 +109,6 @@ const saveTask = async () => {
 }
 
 saveTaskButton.addEventListener('click', saveTask);
-
 
 if (taskModal) {
     taskModal.addEventListener('show.bs.modal', async (event) => {
@@ -162,12 +159,10 @@ if (taskModal) {
 }
 
 /* handling modal for filtering */
-
 const filterModal = document.getElementById('filterModal');
 const allCalendars = document.getElementById('allCalendars');
 const applyFilterButton = document.getElementById('applyFilter');
 const allPriorities = document.getElementById('allPriorities');
-
 
 if (filterModal) {
     filterModal.addEventListener('show.bs.modal', async (event) => {
@@ -306,14 +301,10 @@ if (applySortButton) {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];
         if( globalThis.browser !== undefined) {
-            console.log( 'setting sort (browser)', sortValue);
             await browser.storage.local.set({ "icanban-sort": sortValue} );   
         } else {
-            console.log( 'setting sort', sortValue);
             localStorage.setItem("icanban-sort", JSON.stringify(sortValue));
-            console.log('stored in local storage', localStorage.getItem("icanban-sort"));
         }
-        console.log('defined sort', sort);
         refreshBoard();
     });
 }
@@ -375,8 +366,6 @@ let populateBoard = async () => {
                 event.dataTransfer.dropEffect = "move";
             });
             let calendar = await mc.calendars.get(element.calendarId);
-
-            //console.log('jcal calendar', calendar);
 
             card.style.borderColor = calendar.color;
             card.querySelector('.bi-circle-fill').style.color = calendar.color;
@@ -497,7 +486,6 @@ if (sortPrefs["icanban-sort"] !== undefined) {
     sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs["icanban-sort"]];   
 }
 
-
 await populateBoard();
 
 if (globalThis.messenger !== undefined) {
@@ -509,8 +497,6 @@ if (globalThis.messenger !== undefined) {
     mc.calendars.onUpdated.addListener(refreshBoard);
     mc.calendars.onRemoved.addListener(refreshBoard);
 } else {
-    console.log("preparing events");
-
     mc.items.addEventListener("created",refreshBoard);
     mc.items.addEventListener("updated",refreshBoard);
     mc.items.addEventListener("removed",refreshBoard);
