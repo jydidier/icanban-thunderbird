@@ -4,6 +4,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import './i18n.js';
+
 import * as JCAL from './jcal.js';
 
 let mc = (globalThis.messenger !== undefined) ?
@@ -131,7 +133,7 @@ if (taskModal) {
             document.getElementById('taskModalLabel').textContent = item.summary;
         } else {
             document.getElementById('taskModalColor').style.color = "black";
-            document.getElementById('taskModalLabel').textContent = "New task...";
+            document.getElementById('taskModalLabel').textContent = browser.i18n.getMessage("newTaskButton"); 
         }
         document.getElementById('taskTitle').value = item.summary;
         document.getElementById('taskDescription').value = item.description;
@@ -436,7 +438,7 @@ let populateBoard = async () => {
             cardActionDelete.dataset.id = element.id;
             cardActionDelete.dataset.calendarId = element.calendarId;
             cardActionDelete.addEventListener('click', async (event) => {
-                confirm("Are you sure you want to delete this item?") &&
+                confirm(browser.i18n.getMessage("confirmDeletionMessage")) &&
                     await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
             });
 

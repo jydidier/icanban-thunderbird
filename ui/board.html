@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-bs-theme="auto">
     <head>
-        <title>Kanban board</title>
+        <title data-i18n="boardTitle"></title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" type="text/css" href="ui.css"/>
         <link rel="stylesheet" type="text/css" href="bootstrap.min.css"/>
@@ -13,11 +13,11 @@
             <div class="row">
                 <nav class="navbar navbar-expand-lg">
                     <div class="container-fluid">
-                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi-filter"></i> Filters</button>
-                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal"><i class="bi-sort-alpha-down"></i> Sort settings</button>
-                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="bi-calendar-plus-fill"></i> New task...</button>
-                        <button class="btn btn-outline-secondary"><i class="bi-arrow-clockwise" id="refreshButton"></i> Refresh</button>
-                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#helpModal"><i class="bi-question-circle-fill"></i> Help</button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal" data-i18n="filterButton"><i class="bi-filter"></i></button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal" data-i18n="sortButton"><i class="bi-sort-alpha-down"></i></button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal" data-i18n="newTaskButton"><i class="bi-calendar-plus-fill"></i></button>
+                        <button class="btn btn-outline-secondary" data-i18n="refreshButton"><i class="bi-arrow-clockwise" id="refreshButton"></i></button>
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#helpModal" data-i18n="helpButton"><i class="bi-question-circle-fill"></i></button>
                     </div>
                 </nav>
             </div>
@@ -26,21 +26,21 @@
                 <div class="col border-start">
                     <h5>
                         <span class="bi-hourglass-top"></span>
-                        <b> Needs action</b>
+                        <b data-i18n="needsActionStatus"></b>
                         <span class="badge bg-primary" id="needs-action-count"></span>
                     </h5>
                     <div class="kanban-list" id="NEEDS-ACTION"></div>    
                 </div>
                 <div class="col border-start">
                     <h5><span class="bi-hourglass-split"></span>
-                         <b> In process</b>
+                         <b data-i18n="inProcessStatus"></b>
                         <span class="badge bg-primary" id="in-process-count"></span>
                     </h5>
                     <div class="kanban-list" id="IN-PROCESS"></div>
                 </div>
                 <div class="col border-start">
                     <h5><span class="bi-hourglass-bottom"></span>
-                         <b> Completed</b>
+                         <b data-i18n="completedStatus"></b>
                         <span class="badge bg-primary" id="completed-count"></span>
                     </h5>
                     <div class="kanban-list" id="COMPLETED"></div>
@@ -60,55 +60,54 @@
                     <div class="modal-body">
                         <form id="taskForm">
                             <div class="mb-3">
-                                <label for="taskTitle" class="form-label">Title</label>
+                                <label for="taskTitle" class="form-label" data-i18n="titleField"></label>
                                 <input type="text" class="form-control" id="taskTitle" name="title" required/>
                             </div>
                             <div class="mb-3">
-                                <label for="taskCalendar" class="form-label">Calendar</label>
+                                <label for="taskCalendar" class="form-label" data-i18n="calendarField"></label>
                                 <select class="form-select" id="taskCalendar" name="calendar" required>
                                 </select>
                             </div>
                             <div class="row g-2">
                                 <div class="col-md">
-                                    <label for="taskDueDate" class="form-label">
-                                        Due date
+                                    <label for="taskDueDate" class="form-label" data-i18n="dueDateField">
                                     </label>
                                     <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
                                 </div>
                                 <div class="col-md">
-                                    <label for="taskPercentComplete" class="form-label">Percent complete</label>
+                                    <label for="taskPercentComplete" class="form-label" data-i18n="percentCompleteField"></label>
                                     <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
                                 </div>
                             </div>
                             <div class="row g-2">
                                 <div class="col-md">
-                                    <label for="taskStatus" class="form-label">Status</label>
+                                    <label for="taskStatus" class="form-label" data-i18n="statusField"></label>
                                     <select class="form-select" id="taskStatus" name="status" required>
-                                        <option data-icon="bi-hourglass-top" value="NEEDS-ACTION">Needs action</option>
-                                        <option data-icon="bi-hourglass-split" value="IN-PROCESS">In process</option>
-                                        <option data-icon="bi-hourglass-bottom" value="COMPLETED">Completed</option>
+                                        <option data-icon="bi-hourglass-top" value="NEEDS-ACTION" data-i18n="needsActionStatus"></option>
+                                        <option data-icon="bi-hourglass-split" value="IN-PROCESS" data-i18n="inProcessStatus"></option>
+                                        <option data-icon="bi-hourglass-bottom" value="COMPLETED" data-i18n="completedStatus"></option>
                                     </select>
                                 </div>
                                 <div class="col-md">
-                                    <label for="taskPriority" class="form-label">Priority</label>
+                                    <label for="taskPriority" class="form-label" data-i18n="priorityField"></label>
                                     <select class="form-select" id="taskPriority" name="priority" required>
-                                        <option value=0>None</option>
-                                        <option value=9>Low</option>
-                                        <option value=5>Medium</option>
-                                        <option value=1>High</option>
+                                        <option value=0 data-i18n="nonePriority"></option>
+                                        <option value=9 data-i18n="lowPriority"></option>
+                                        <option value=5 data-i18n="mediumPriority"></option>
+                                        <option value=1 data-i18n="highPriority"></option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="taskDescription" class="form-label">Description</label>
+                                <label for="taskDescription" class="form-label" data-i18n="descriptionField"></label>
                                 <textarea class="form-control" id="taskDescription" name="description" rows=5 required></textarea>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveTask">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="closeButton"></button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveTask" data-i18n="saveButton"></button>
                     </div>
                 </div>
             </div>
@@ -119,46 +118,46 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="filterModalLabel">Filter settings</h5>
+                        <h5 class="modal-title" id="filterModalLabel" data-i18n="filterHeader"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="filterForm">
-                            <h5>Calendars</h5>
+                            <h5 data-i18n="calendarsFilter"></h5>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="allCalendars" checked/>
-                                <label class="form-check-label" for="allCalendars">All calendars</label>
+                                <label class="form-check-label" for="allCalendars" data-i18n="allCalendarsLabel"></label>
                             </div>
                             <div id="calendarList">
 
                             </div>
-                            <h5>Priority</h5>
+                            <h5 data-i18n="priorityField"></h5>
                             <div class="mb-3 form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="allPriorities" checked />
-                                <label class="form-check-label" for="allPriorities">All</label>
+                                <label class="form-check-label" for="allPriorities" data-i18n="allPrioritiesLabel"></label>
                             </div>
                             <div id="priorityList">
                                 <div class="mb-3 form-check form-check-inline">
                                     <input class="form-check-input" type="radio"  name="prioritiesFilter" value="0" id="nonePriority" disabled/>
-                                    <label class="form-check-label" for="nonePriority">None</label>
+                                    <label class="form-check-label" for="nonePriority" data-i18n="nonePriority"></label>
                                 </div>
                                 <div class="mb-3 form-check form-check-inline">
                                     <input class="form-check-input" type="radio"  name="prioritiesFilter" value="9" id="lowPriority" disabled/>
-                                    <label class="form-check-label" for="lowPriority">Low</label>
+                                    <label class="form-check-label" for="lowPriority" data-i18n="lowPriority"></label>
                                 </div>
                                 <div class="mb-3 form-check form-check-inline">
                                     <input class="form-check-input" type="radio"  name="prioritiesFilter" value="5" id="mediumPriority" disabled/>
-                                    <label class="form-check-label" for="mediumPriority">Normal</label>
+                                    <label class="form-check-label" for="mediumPriority" data-i18n="mediumPriority"></label>
                                 </div>
                                 <div class="mb-3 form-check form-check-inline">
                                     <input class="form-check-input" type="radio"  name="prioritiesFilter" value="1" id="highPriority" disabled/>
-                                    <label class="form-check-label" for="highPriority">High</label>
+                                    <label class="form-check-label" for="highPriority" data-i18n="highPriority"></label>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyFilter">Apply</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applyFilter" data-i18n="applyButton"></button>
                     </div>
                 </div>
             </div>
@@ -169,67 +168,61 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="sortModalLabel">Sort by</h5>
+                        <h5 class="modal-title" id="sortModalLabel" data-i18n="sortHeader"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="sortList">
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="none" id="noneSort" checked/>
-                                <label class="form-check-label" for="dueDateSort">None</label>
+                                <label class="form-check-label" for="dueDateSort" data-i18n="noneSort"></label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="dueDateASort" id="dueDateASort"/>
-                                <label class="form-check-label" for="dueDateSort">
+                                <label class="form-check-label" for="dueDateSort" data-i18n="dueDateASort">
                                     <i class="bi-calendar-plus-fill"></i>
                                     <i class="bi-sort-up"></i>
-                                    Due date ascending
                                 </label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="dueDateDSort" id="dueDateDSort"/>
-                                <label class="form-check-label" for="dueDateSort">
+                                <label class="form-check-label" for="dueDateSort" data-i18n="dueDateDSort">
                                     <i class="bi-calendar-plus-fill"></i>
                                     <i class="bi-sort-down"></i>
-                                    Due date descending
                                 </label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="priorityASort" id="priorityASort"/>
-                                <label class="form-check-label" for="prioritySort">
+                                <label class="form-check-label" for="prioritySort" data-i18n="priorityASort">
                                     <i class="bi-exclamation-triangle-fill"></i>
                                     <i class="bi-sort-up"></i>
-                                    Priority ascending
                                 </label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="priorityDSort" id="priorityDSort"/>
-                                <label class="form-check-label" for="prioritySort">
+                                <label class="form-check-label" for="prioritySort" data-i18n="priorityDSort">
                                     <i class="bi-exclamation-triangle-fill"></i>
                                     <i class="bi-sort-down"></i>
-                                    Priority descending
                                 </label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="percentCompleteASort" id="percentCompleteASort"/>
-                                <label class="form-check-label" for="percentCompleteSort">
+                                <label class="form-check-label" for="percentCompleteSort" data-i18n="percentCompleteASort">
                                     <i class="bi-percent"></i>
                                     <i class="bi-sort-up"></i>
-                                    Percent complete ascending
                                 </label>
                             </div>
                             <div class="mb-3 form-check">
                                 <input class="form-check-input" type="radio" name="sort" value="percentCompleteDSort" id="percentCompleteDSort"/>
-                                <label class="form-check-label" for="percentCompleteSort">
+                                <label class="form-check-label" for="percentCompleteSort" data-i18n="percentCompleteDSort">
                                     <i class="bi-percent"></i>
                                     <i class="bi-sort-down"></i>
-                                    Percent complete descending
                                 </label>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applySort">Apply</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="applySort" data-i18n="applyButton"></button>
                     </div>
                 </div>
             </div>
@@ -240,26 +233,16 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="helpModalLabel">How to use the Kanban board</h5>
+                        <h5 class="modal-title" id="helpModalLabel" data-i18n="helpHeader"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>
-                            The Kanban board is a tool for visualizing work, which helps you to manage tasks and projects.
-                            The board is divided into three columns: Needs action, In process, and Completed.
-                            Each column represents a stage of the work process.
-                            You can move tasks between columns by dragging and dropping them.
-                        </p>
-                        <p>
-                            To create a new task, click on the "New task..." button. Fill in the form and click on the "Save" button.
-                            To edit a task, click on the "Edit" button in the task card.
-                        </p>
-                        <p>
-                            You can filter tasks by calendar and priority. You can sort tasks by due date, priority, and percent complete.
-                        </p>
+                        <p data-i18n="help1"></p>
+                        <p data-i18n="help2"></p>
+                        <p data-i18n="help3"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="closeButton"></button>
                     </div>
                 </div>
             </div>

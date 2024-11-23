@@ -1,0 +1,174 @@
+{
+    "extensionName": {
+        "message": "iCanban - ICALと連携したカンバン",
+        "description": "拡張機能の名前"
+    },
+    "extensionDescription": {
+        "message": "ICALのToDo機能には、基本的なカンバンボードに最適なステータスがあります。この拡張機能では、それを活用してタスクを視覚的に管理できます。拡張機能をインストールすると、カンバンボードを表示する方法は2つあります。1つ目は、メール閲覧時に上部ウィンドウバーに表示される「Kanban」ボタンを使用する方法です。2つ目は、「ツール」メニューから「カンバンボードを表示」という項目を選択する方法です。",
+        "description": "拡張機能の説明"
+    },
+    "menuItem": {
+        "message": "カンバンボードを表示",
+        "description": "カンバンボードを起動するためのメニュー項目"
+    },
+    "boardTitle": {
+        "message": "カンバンボード",
+        "description": "カンバンボードを表示するHTMLページの名前"
+    },
+    "filterButton": {
+        "message": " フィルター",
+        "description": "フィルターボタンの名前"
+    },
+    "sortButton": {
+        "message": " 並べ替え設定",
+        "description": "並べ替え設定ボタンの名前"
+    },
+    "newTaskButton": {
+        "message": " 新しいタスク...",
+        "description": "新しいタスクボタンの名前"
+    },
+    "refreshButton": {
+        "message": " 更新",
+        "description": "更新ボタンの名前"
+    },
+    "helpButton": {
+        "message": " ヘルプ",
+        "description": "ヘルプボタンの名前"
+    },
+    "needsActionStatus": {
+        "message": " 要対応",
+        "description": "対応が必要なタスクのステータス"
+    },
+    "inProcessStatus": {
+        "message": " 処理中",
+        "description": "処理中のタスクのステータス"
+    },
+    "completedStatus": {
+        "message": " 完了",
+        "description": "完了したタスクのステータス"
+    },
+    "confirmDeletionMessage": {
+        "message": "この項目を削除してもよろしいですか？",
+        "description": "タスクを削除する際に表示されるメッセージ"
+    },
+    "titleField": {
+        "message": "タイトル",
+        "description": "タスクのタイトルフィールドの名前"
+    },
+    "calendarField": {
+        "message": "カレンダー",
+        "description": "タスクのカレンダーフィールドの名前"
+    },
+    "dueDateField": {
+        "message": "期限日",
+        "description": "タスクの期限フィールドの名前"
+    },
+    "percentCompleteField": {
+        "message": "完了率",
+        "description": "タスクの完了率フィールドの名前"
+    },
+    "statusField": {
+        "message": "ステータス",
+        "description": "タスクのステータスフィールドの名前"
+    },
+    "priorityField": {
+        "message": "優先度",
+        "description": "タスクの優先度フィールドの名前"
+    },
+    "nonePriority": {
+        "message": "なし",
+        "description": "優先度なしの名前"
+    },
+    "lowPriority": {
+        "message": "低",
+        "description": "低い優先度の名前"
+    },
+    "mediumPriority": {
+        "message": "中",
+        "description": "通常の優先度の名前"
+    },
+    "highPriority": {
+        "message": "高",
+        "description": "高い優先度の名前"
+    },
+    "descriptionField": {
+        "message": "説明",
+        "description": "説明フィールドの名前"
+    },
+    "closeButton": {
+        "message": "閉じる",
+        "description": "閉じるボタンの名前"
+    },
+    "saveButton": {
+        "message": "保存",
+        "description": "保存ボタンの名前"
+    },
+    "applyButton": {
+        "message": "適用",
+        "description": "適用ボタンの名前"
+    },
+    "filterHeader": {
+        "message": "フィルター設定",
+        "description": "フィルターモーダルダイアログのヘッダー"
+    },
+    "calendarsFilter": {
+        "message": "カレンダー",
+        "description": "カレンダーによるフィルター"
+    },
+    "allCalendarsLabel": {
+        "message": "すべてのカレンダー",
+        "description": "すべてのカレンダー用スイッチのラベル"
+    },
+    "allPrioritiesLabel": {
+        "message": "すべて",
+        "description": "すべての優先度用スイッチのラベル"
+    },
+    "sortHeader": {
+        "message": "並べ替え",
+        "description": "並べ替えモーダルダイアログのヘッダー"
+    },
+    "noneSort": {
+        "message": "なし",
+        "description": "並べ替えなしのオプション"
+    },
+    "dueDateASort": {
+        "message": "期限日昇順",
+        "description": "期限日昇順で並べ替えるオプション"
+    },
+    "dueDateDSort": {
+        "message": "期限日降順",
+        "description": "期限日降順で並べ替えるオプション"
+    },
+    "priorityASort": {
+        "message": "優先度昇順",
+        "description": "優先度昇順で並べ替えるオプション"
+    },
+    "priorityDSort": {
+        "message": "優先度降順",
+        "description": "優先度降順で並べ替えるオプション"
+    },
+    "percentCompleteASort": {
+        "message": "完了率昇順",
+        "description": "完了率昇順で並べ替えるオプション"
+    },
+    "percentCompleteDSort": {
+        "message": "完了率降順",
+        "description": "完了率降順で並べ替えるオプション"
+    },
+    "helpHeader": {
+        "message": "カンバンボードの使い方",
+        "description": "ヘルプモーダルダイアログのヘッダー"
+    },
+    "help1": {
+        "message": "カンバンボードは、作業を視覚化するためのツールで、タスクやプロジェクトを管理するのに役立ちます。ボードは「要対応」、「処理中」、「完了」の3つの列に分かれています。それぞれの列は作業プロセスの段階を表しています。タスクをドラッグ＆ドロップして列間を移動させることができます。",
+        "description": "ヘルプモーダルダイアログの最初の段落"
+    },
+    "help2": {
+        "message": "新しいタスクを作成するには、「新しいタスク...」ボタンをクリックします。フォームに入力し、「保存」ボタンをクリックしてください。タスクを編集するには、タスクリスト上のペンアイコンをクリックします。",
+        "description": "ヘルプモーダルダイアログの2番目の段落"
+    },
+    "help3": {
+        "message": "タスクはカレンダーや優先度でフィルターできます。また、期限日、優先度、完了率でタスクを並べ替えることができます。",
+        "description": "ヘルプモーダルダイアログの3番目の段落"
+    }            
+}

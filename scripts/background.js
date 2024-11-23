@@ -5,7 +5,7 @@ let kanbanContext = await browser.contextualIdentities.create({
 });
 
 let kanbanMenuItem = await browser.menus.create({
-    "title": "Display kanban board",
+    "title": browser.i18n.getMessage("menuItem"),
     "contexts": ["tools_menu"],
     "icons": {
         "16": "images/icanban_16x16.png",

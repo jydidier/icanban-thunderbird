@@ -1,0 +1,174 @@
+{
+    "extensionName" : {
+        "message" : "iCanban - Kanban with ICAL",
+        "description" : "Name of the extension"
+    },
+    "extensionDescription" : {
+        "message" : "ICAL's todo have status that are just perfect for a basic Kanban board. This extension provides it so that you can manage your tasks visually. There are two ways to display the Kanban board once the extension has been installed. The first one is through the 'Kanban' button displayed in the top window bar when consulting emails. The second one is through the 'Tools' menu in which you can find an item named 'Display Kanban board'.",
+        "description" : "Description of the extension"
+    },
+    "menuItem" : {
+        "message" : "Display kanban board",
+        "description" : "Menu item to start the kanban board"
+    },
+    "boardTitle" : {
+        "message" : "Kanban board",
+        "description" : "Name of the HTML page displaying the Kanban board"
+    },
+    "filterButton": {
+        "message" : " Filters",
+        "description" : "Name of the filter button"
+    },
+    "sortButton": {
+        "message" : " Sort settings",
+        "description" : "Name of the sort setting button"
+    },
+    "newTaskButton": {
+        "message" : " New task...",
+        "description" : "Name of the new task button"
+    },
+    "refreshButton": {
+        "message" : " Refresh",
+        "description" : "Name of the refresh button"
+    },
+    "helpButton": {
+        "message" : " Help",
+        "description" : "Name of the help button"
+    },
+    "needsActionStatus" : {
+        "message" : " Needs action",
+        "description" : "Status for a task that needs action "
+    },
+    "inProcessStatus" : {
+        "message" : " In process",
+        "description" : "Status for a task in process"
+    },
+    "completedStatus" : {
+        "message" : " Completed",
+        "description" : "Status for a completed task"
+    },
+    "confirmDeletionMessage" : {
+        "message" : "Are you sure you want to delete this item?",
+        "description" : "Message displayed when a task is deleted"
+    },
+    "titleField" : {
+        "message" : "Title",
+        "description" : "Name of the title field of a task"
+    },
+    "calendarField": {
+        "message" : "Calendar",
+        "description" : "Name of the calendar field of a task"
+    },
+    "dueDateField" : {
+        "message" : "Due date",
+        "description" : "Name of the due date field of a task"
+    },
+    "percentCompleteField" : {
+        "message" : "Percent complete",
+        "description" : "Name of the percent complete field of a task"
+    },
+    "statusField" : {
+        "message" : "Status",
+        "description" : "Name of the status field of a task"
+    },
+    "priorityField" : {
+        "message" : "Priority",
+        "description" : "Name of the priority field of a task"
+    },
+    "nonePriority" : {
+        "message" : "None",
+        "description" : "Name of none priority"
+    },
+    "lowPriority" : {
+        "message" : "Low",
+        "description" : "Name of low priority"
+    },
+    "mediumPriority" : {
+        "message" : "Medium",
+        "description" : "Name of normal priority"
+    },
+    "highPriority" : {
+        "message" : "High",
+        "description" : "Name of high priority"
+    },
+    "descriptionField" : {
+        "message" : "Description",
+        "description" : "Name of the description field"
+    },
+    "closeButton" : {
+        "message" : "Close",
+        "description" : "Name of the close button"
+    },
+    "saveButton" : {
+        "message" : "Save",
+        "description" : "Name of the save button"
+    },
+    "applyButton" : {
+        "message" : "Apply",
+        "description" : "Name of the apply button"
+    },
+    "filterHeader" : {
+        "message" : "Filter settings",
+        "description" : "Header of the filter modal dialog"
+    },
+    "calendarsFilter" : {
+        "message" : "Calendars",
+        "description" : "Filter by calendar"
+    },
+    "allCalendarsLabel" : {
+        "message" : "All calendars",
+        "description" : "Label for all calendars switch"
+    },
+    "allPrioritiesLabel" : {
+        "message" : "All",
+        "description" : "Label for all priorities switch"
+    },
+    "sortHeader" : {
+        "message" : "Sort by",
+        "description" : "Header of the sort modal dialog"
+    },
+    "noneSort" : {
+        "message" : "None",
+        "description" : "None sort option"
+    },
+    "dueDateASort" : {
+        "message" : "Due date ascending",
+        "description" : "Due date ascending sort option"
+    },
+    "dueDateDSort" : {
+        "message" : "Due date descending",
+        "description" : "Due date descending sort option"
+    },
+    "priorityASort" : {
+        "message" : "Priority ascending",
+        "description" : "Priority ascending sort option"
+    },
+    "priorityDSort" : {
+        "message" : "Priority descending",
+        "description" : "Priority descending sort option"
+    },
+    "percentCompleteASort" : {
+        "message" : "Percent complete ascending",
+        "description" : "Percent complete ascending sort option"
+    },
+    "percentCompleteDSort" : {
+        "message" : "Percent complete descending",
+        "description" : "Percent complete descending sort option"
+    },
+    "helpHeader" : {
+        "message" : "How to use the Kanban board",
+        "description" : "Header of the help modal dialog"
+    },
+    "help1" : {
+        "message" : "The Kanban board is a tool for visualizing work, which helps you to manage tasks and projects. The board is divided into three columns: \"Needs action\", \"In process\", and \"Completed\". Each column represents a stage of the work process. You can move tasks between columns by dragging and dropping them.",
+        "description" : "First paragraph of help modal dialog"
+    },
+    "help2" : {
+        "message" : "To create a new task, click on the \"New task...\" button. Fill in the form and click on the \"Save \" button. To edit a task, click on the pen icon in the task card.",
+        "description" : "Second paragraph of help modal dialog"
+    },
+    "help3" : {
+        "message" : "You can filter tasks by calendar and priority. You can sort tasks by due date, priority, and percent complete.",
+        "description" : "Third paragraph of help modal dialog"
+    }
+}

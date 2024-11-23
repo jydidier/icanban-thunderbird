@@ -1,0 +1,174 @@
+{
+    "extensionName" : {
+        "message" : "iCanban - Kanban avec ICAL",
+        "description" : "Nom de l'extension"
+    },
+    "extensionDescription" : {
+        "message" : "Le standard ICAL supporte des tâches dont les statuts correspondent aux colonnes de base d'un tableau Kanban. Cette extension permet de gérer visuellement les tâches en utilisant ce tableau. Une fois l'extension installée, le tableau Kanban peut être affiché de deux manières. La première est via le bouton 'Kanban' situé dans la barre supérieure de la fenêtre lorsque le courrier est consulté. La seconde est par le biais du menu 'Outils' dans lequel vous pourrez trouver un item intitulé 'Afficher le tableau Kanban'.",
+        "description" : "Description of the extension"
+    },
+    "menuItem" : {
+        "message" : "Afficher le tableau Kanban",
+        "description" : "Item du menu qui affiche le tableau Kanban"
+    },
+    "boardTitle" : {
+        "message" : "Tableau Kanban",
+        "description" : "Nom de la page HTML affichant le tableau Kanban"
+    },
+    "filterButton": {
+        "message" : " Filtrer",
+        "description" : "Nom du bouton filtrer"
+    },
+    "sortButton": {
+        "message" : " Trier",
+        "description" : "Nom du bouton trier"
+    },
+    "newTaskButton": {
+        "message" : " Nouvelle tâche...",
+        "description" : "Nom du bouton nouvelle tâche"
+    },
+    "refreshButton": {
+        "message" : " Synchroniser",
+        "description" : "Nom du bouton synchroniser"
+    },
+    "helpButton": {
+        "message" : " Aide",
+        "description" : "Nom du bouton aide"
+    },
+    "needsActionStatus" : {
+        "message" : " Une action est requise",
+        "description" : "Etat de tâche à faire"
+    },
+    "inProcessStatus" : {
+        "message" : " En cours",
+        "description" : "Etat de tâche en cours"
+    },
+    "completedStatus" : {
+        "message" : " Achevé",
+        "description" : "Etat de tâche terminé"
+    },
+    "confirmDeletionMessage" : {
+        "message" : "Etes-vous sûr de vouloir supprimer cette tâche?",
+        "description" : "Message affiché lors de la suppression d'une tâche"
+    },
+    "titleField" : {
+        "message" : "Titre",
+        "description" : "Nom du champ titre d'une tâche"
+    },
+    "calendarField": {
+        "message" : "Calendrier",
+        "description" : "Nom du champ calendrier d'une tâche"
+    },
+    "dueDateField" : {
+        "message" : "Fin prévue",
+        "description" : "Nom du champ fin prévue d'une tâche"
+    },
+    "percentCompleteField" : {
+        "message" : "% d'achèvement",
+        "description" : "Nom du champ % d'achèvement d'une tâche"
+    },
+    "statusField" : {
+        "message" : "Etat",
+        "description" : "Nom du champ état d'une tâche"
+    },
+    "priorityField" : {
+        "message" : "Priorité",
+        "description" : "Nom du champ priorité d'un tâche"
+    },
+    "nonePriority" : {
+        "message" : "Non spécifiée",
+        "description" : "Intitulé d'une priorité non spécifiée"
+    },
+    "lowPriority" : {
+        "message" : "Basse",
+        "description" : "Intitulé d'une priorité basse"
+    },
+    "mediumPriority" : {
+        "message" : "Normale",
+        "description" : "Intitulé d'une priorité normale"
+    },
+    "highPriority" : {
+        "message" : "Haute",
+        "description" : "Intitulé d'une priorité haute"
+    },
+    "descriptionField" : {
+        "message" : "Description",
+        "description" : "Nom du champ description d'une tâche"
+    },
+    "closeButton" : {
+        "message" : "Fermer",
+        "description" : "Nom du bouton fermer"
+    },
+    "saveButton" : {
+        "message" : "Enregistrer",
+        "description" : "Nom du bouton enregistrer"
+    },
+    "applyButton" : {
+        "message" : "Appliquer",
+        "description" : "Nom du bouton appliquer"
+    },
+    "filterHeader" : {
+        "message" : "Paramètres de filtrage",
+        "description" : "En-tête de la boîte de dialogue filtrer"
+    },
+    "calendarsFilter" : {
+        "message" : "Calendriers",
+        "description" : "Filtre par calendrier"
+    },
+    "allCalendarsLabel" : {
+        "message" : "Tous les calendriers",
+        "description" : "Libellé pour la bascule concernant les calendriers"
+    },
+    "allPrioritiesLabel" : {
+        "message" : "Toutes",
+        "description" : "Libellé pour la bascule concernant les priorités"
+    },
+    "sortHeader" : {
+        "message" : "Critères de tri",
+        "description" : "En tête de la boîte de dialogue de tri"
+    },
+    "noneSort" : {
+        "message" : "Aucun",
+        "description" : "Option de tri par défaut"
+    },
+    "dueDateASort" : {
+        "message" : "Date de fin prévue (ascendante)",
+        "description" : "Tri par date de fin"
+    },
+    "dueDateDSort" : {
+        "message" : "Date de fin prévue (descendante)",
+        "description" : "Tri par date de fin"
+    },
+    "priorityASort" : {
+        "message" : "Priorité (ascendante)",
+        "description" : "Tri par priorité"
+    },
+    "priorityDSort" : {
+        "message" : "Priorité (descendante)",
+        "description" : "Tri par priorité"
+    },
+    "percentCompleteASort" : {
+        "message" : "Pourcentage d'achèvement (ascendant)",
+        "description" : "Tri par pourcentage d'achèvement"
+    },
+    "percentCompleteDSort" : {
+        "message" : "Pourcentage d'achèvement (descendant)",
+        "description" : "Tri par pourcentage d'achèvement"
+    },
+    "helpHeader" : {
+        "message" : "Comment utiliser le tableau Kanban ?",
+        "description" : "En-tête de la boîte de dialogue d'aide"
+    },
+    "help1" : {
+        "message" : "Le tableau Kanban est un outil de visualisation du travail, qui vous aide à gérer les tâches et les projets. Le tableau est divisé en trois colonnes : \"Une action est requise\", \"En cours\" et \"Achevé\". Chaque colonne représente une étape du processus de travail. Vous pouvez déplacer les tâches entre les colonnes en les faisant glisser et déposer.",
+        "description" : "Premier paragraphe de la boîte de dialogue d'aide"
+    },
+    "help2" : {
+        "message" : "Pour créer une nouvelle tâche, cliquez sur le bouton \"Nouvelle tâche...\". Remplissez le formulaire, puis cliquez sur le bouton \"Enregistrer\". Pour modifier une tâche, cliquez sur l'icône crayon de la carte de la tâche.",
+        "description" : "Deuxième paragraphe de la boîte de dialogue d'aide"
+    },
+    "help3" : {
+        "message" : "Vous pouvez filtrer les tâches par calendrier et par priorité. Vous pouvez trier les tâches par date de fin prévue, par priorité et par pourcentage d'avancement.",
+        "description" : "Troisième et dernier paragraphe de la boîte de dialogue d'aide"
+    }
+}
