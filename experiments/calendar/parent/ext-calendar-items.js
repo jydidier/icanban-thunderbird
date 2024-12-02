@@ -17,7 +17,7 @@ this.calendar_items = class extends ExtensionAPI {
       propsToItem,
       convertItem,
       convertAlarm,
-    } = ChromeUtils.importESModule("resource://tb-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
+    } = ChromeUtils.importESModule("resource://kanban-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
 
     return {
       calendar: {
