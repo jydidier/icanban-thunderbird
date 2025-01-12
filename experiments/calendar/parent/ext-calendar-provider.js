@@ -500,11 +500,11 @@ this.calendar_provider = class extends ExtensionAPI {
     Services.io
       .getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler)
-      .setSubstitution("tb-experiments-calendar", this.extension.rootURI);
+      .setSubstitution("kanban-experiments-calendar", this.extension.rootURI);
 
-    const { setupE10sBrowser, unwrapCalendar } = ChromeUtils.importESModule("resource://tb-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
+    const { setupE10sBrowser, unwrapCalendar } = ChromeUtils.importESModule("resource://kanban-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
 
-    ChromeUtils.registerWindowActor("CalendarProvider", { child: { esModuleURI: "resource://tb-experiments-calendar/experiments/calendar/child/ext-calendar-provider-actor.sys.mjs" } });
+    ChromeUtils.registerWindowActor("CalendarProvider", { child: { esModuleURI: "resource://kanban-experiments-calendar/experiments/calendar/child/ext-calendar-provider-actor.sys.mjs" } });
 
     ExtensionSupport.registerWindowListener("ext-calendar-provider-properties-" + this.extension.id, {
       chromeURLs: ["chrome://calendar/content/calendar-properties-dialog.xhtml"],
@@ -614,11 +614,11 @@ this.calendar_provider = class extends ExtensionAPI {
       ExtCalendarProvider.unregister(this.extension);
     }
 
-    Cu.unload("resource://tb-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
+    Cu.unload("resource://kanban-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
     Services.io
       .getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler)
-      .setSubstitution("tb-experiments-calendar", null);
+      .setSubstitution("kanban-experiments-calendar", null);
     Services.obs.notifyObservers(null, "startupcache-invalidate");
   }
 
@@ -650,7 +650,7 @@ this.calendar_provider = class extends ExtensionAPI {
       propsToItem,
       convertItem,
       convertCalendar,
-    } = ChromeUtils.importESModule("resource://tb-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
+    } = ChromeUtils.importESModule("resource://kanban-experiments-calendar/experiments/calendar/ext-calendar-utils.sys.mjs");
 
     return {
       calendar: {
