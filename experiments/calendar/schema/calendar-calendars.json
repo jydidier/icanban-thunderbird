@@ -109,7 +109,9 @@
               "color": { "type": "string", "optional": true },
               "readOnly": { "type": "boolean", "optional": true },
               "visible": { "type": "boolean", "optional": true },
-              "enabled": { "type": "boolean", "optional": true }
+              "enabled": { "type": "boolean", "optional": true },
+              "tasksSupported" : { "type": "boolean", "optional": true},
+              "eventsSupported" : { "type": "boolean", "optional": true}
             }
           }
         ]

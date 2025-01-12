@@ -19,7 +19,7 @@ this.calendar_calendars = class extends ExtensionAPI {
     return {
       calendar: {
         calendars: {
-          async query({ type, url, name, color, readOnly, enabled, visible }) {
+          async query({ type, url, name, color, readOnly, enabled, visible, tasksSupported, eventsSupported }) {
             const calendars = cal.manager.getCalendars();
 
             let pattern = null;
@@ -33,9 +33,21 @@ this.calendar_calendars = class extends ExtensionAPI {
 
             return calendars
               .filter(calendar => {
+
                 let matches = true;
 
                 if (type && calendar.type != type) {
+                  matches = false;
+                }
+
+                // added to filter out calendars without some specific support
+                if (tasksSupported && !calendar.getProperty('capabilities.tasks.supported'))
+                {
+                  matches = false;
+                }
+
+                if(eventsSupported && !calendar.getProperty('capabilities.events.supported'))
+                {
                   matches = false;
                 }
 

@@ -37,7 +37,7 @@ let dragover = (event) => {
 
 let drop = async (event) => {
     event.preventDefault();
-    console.log('dropped',event);
+    //console.log('dropped',event);
     let target = event.target;
     if (event.target.nodeName === "DIV") {
         target = event.target.querySelector('.kanban-list');
@@ -47,10 +47,10 @@ let drop = async (event) => {
         let data = JSON.parse(event.dataTransfer.getData("text/plain"));
         /* necessary as an instant feedback for the user */
         target.appendChild(document.getElementById(data.id));
-        let cmp = await mc.items.get(calendarId, id, { returnFormat: "jcal" });
+        let cmp = await mc.items.get(data.calendarId, data.id, { returnFormat: "jcal" });
         let jtodo = asTodo(cmp);
         jtodo.status = target.id;
-        if (jtodo.status === "COMPLETED") { jtodo.percentComplete = 100; } else { jtodo.percentComplete = 0; }
+        if (jtodo.status === "COMPLETED") { jtodo.percentComplete = 100; } else { jtodo.percentComplete = 0; jtodo.completed=undefined;}
         await mc.items.update(data.calendarId, data.id, { format: "jcal", item: jtodo.data });
     }
 };
@@ -146,7 +146,7 @@ if (taskModal) {
 
         document.querySelectorAll('#taskCalendar option').forEach(option => option.remove());
 
-        let calendars = await mc.calendars.query({});
+        let calendars = await mc.calendars.query({tasksSupported: true});
         calendars.sort( 
             (a, b) => a.name.localeCompare(b.name) 
         ).forEach(calendar => {
@@ -168,7 +168,7 @@ const allPriorities = document.getElementById('allPriorities');
 
 if (filterModal) {
     filterModal.addEventListener('show.bs.modal', async (event) => {
-        let calendars = await mc.calendars.query({});
+        let calendars = await mc.calendars.query({tasksSupported: true});
         let filterList = document.getElementById('calendarList');
         let allCalendars = document.getElementById('allCalendars');
         filterList.innerHTML = "";
@@ -460,7 +460,6 @@ let populateBoard = async () => {
 let inRefresh = false;
 
 let refreshBoard = async () => {
-    console.log('refreshing board');
     if (!inRefresh) {
         inRefresh = true;
         clearBoard();

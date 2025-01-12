@@ -114,6 +114,7 @@ class Component {
             if (properties.hasOwnProperty(element)) {
                 Object.defineProperty(self, toCamelCase(element), {
                     enumerable: true,
+                    //configurable: true,
                     get: function() {
                         let result = null; 
                         self.data[1].forEach(elt => {
@@ -125,6 +126,12 @@ class Component {
                     },
                     set: function(value) {
                         let updated = false;
+                        if (value === undefined) {
+                            let idx = self.data[1].findIndex(elt => elt[0]===element);
+                            self.data[1].splice(idx,1);
+                            updated = true;
+                        } 
+
                         self.data[1].forEach(elt => {
                             if (elt[0] === element) {
                                 elt[3] = value;
