@@ -59,6 +59,14 @@
         "message": "カレンダー",
         "description": "タスクのカレンダーフィールドの名前"
     },
+    "parentField": {
+        "message": "親タスク",
+        "description": "親タスクの選択"
+    },
+    "startDateField": {
+        "message": "開始",
+        "description": "タスクの開始日フィールド名"
+    },    
     "dueDateField": {
         "message": "期限日",
         "description": "タスクの期限フィールドの名前"

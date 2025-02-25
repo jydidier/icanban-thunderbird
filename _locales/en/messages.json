@@ -59,6 +59,14 @@
         "message" : "Calendar",
         "description" : "Name of the calendar field of a task"
     },
+    "parentField": {
+        "message": "Parent task",
+        "description": "Selection of the parent task"
+    },
+    "startDateField": {
+        "message": "Start",
+        "description": "Name of the task start date field"
+    },    
     "dueDateField" : {
         "message" : "Due date",
         "description" : "Name of the due date field of a task"

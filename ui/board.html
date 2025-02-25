@@ -16,7 +16,7 @@
                         <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal" data-i18n="filterButton"><i class="bi-filter"></i></button>
                         <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#sortModal" data-i18n="sortButton"><i class="bi-sort-alpha-down"></i></button>
                         <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#taskModal" data-i18n="newTaskButton"><i class="bi-calendar-plus-fill"></i></button>
-                        <button class="btn btn-outline-secondary" data-i18n="refreshButton"><i class="bi-arrow-clockwise" id="refreshButton"></i></button>
+                        <button class="btn btn-outline-secondary" data-i18n="refreshButton" id="refreshButton"><i class="bi-arrow-clockwise"></i></button>
                         <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#helpModal" data-i18n="helpButton"><i class="bi-question-circle-fill"></i></button>
                     </div>
                 </nav>
@@ -64,28 +64,14 @@
                                 <input type="text" class="form-control" id="taskTitle" name="title" required/>
                             </div>
                             <div class="mb-3">
-                                <label for="taskCalendar" class="form-label" data-i18n="calendarField"></label>
-                                <select class="form-select" id="taskCalendar" name="calendar" required>
+                                <label for="taskParent" class="form-label" data-i18n="parentField"></label>
+                                <select class="form-select" id="taskParent" name="parent" required>
                                 </select>
                             </div>
                             <div class="row g-2">
                                 <div class="col-md">
-                                    <label for="taskDueDate" class="form-label" data-i18n="dueDateField">
-                                    </label>
-                                    <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
-                                </div>
-                                <div class="col-md">
-                                    <label for="taskPercentComplete" class="form-label" data-i18n="percentCompleteField"></label>
-                                    <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="col-md">
-                                    <label for="taskStatus" class="form-label" data-i18n="statusField"></label>
-                                    <select class="form-select" id="taskStatus" name="status" required>
-                                        <option data-icon="bi-hourglass-top" value="NEEDS-ACTION" data-i18n="needsActionStatus"></option>
-                                        <option data-icon="bi-hourglass-split" value="IN-PROCESS" data-i18n="inProcessStatus"></option>
-                                        <option data-icon="bi-hourglass-bottom" value="COMPLETED" data-i18n="completedStatus"></option>
+                                    <label for="taskCalendar" class="form-label" data-i18n="calendarField"></label>
+                                    <select class="form-select" id="taskCalendar" name="calendar" required>
                                     </select>
                                 </div>
                                 <div class="col-md">
@@ -95,6 +81,32 @@
                                         <option value=9 data-i18n="lowPriority"></option>
                                         <option value=5 data-i18n="mediumPriority"></option>
                                         <option value=1 data-i18n="highPriority"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md">
+                                    <label for="taskStartDate" class="form-label" data-i18n="startDateField">
+                                    </label>
+                                    <input type="datetime-local" class="form-control" id="taskStartDate" name="startDate" />
+                                </div>
+                                <div class="col-md">
+                                    <label for="taskDueDate" class="form-label" data-i18n="dueDateField">
+                                    </label>
+                                    <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md">
+                                    <label for="taskPercentComplete" class="form-label" data-i18n="percentCompleteField"></label>
+                                    <input type="number" class="form-control" id="taskPercentComplete" name="percentComplete" min="0" max="100" required/>                                
+                                </div>
+                                <div class="col-md">
+                                    <label for="taskStatus" class="form-label" data-i18n="statusField"></label>
+                                    <select class="form-select" id="taskStatus" name="status" required>
+                                        <option data-icon="bi-hourglass-top" value="NEEDS-ACTION" data-i18n="needsActionStatus"></option>
+                                        <option data-icon="bi-hourglass-split" value="IN-PROCESS" data-i18n="inProcessStatus"></option>
+                                        <option data-icon="bi-hourglass-bottom" value="COMPLETED" data-i18n="completedStatus"></option>
                                     </select>
                                 </div>
                             </div>
@@ -250,18 +262,24 @@
         
         <!-- Card template -->
         <template id="cardTemplate">
-            <div class="card kanban-item" draggable="true">
-                <div class="card-body">
-                    <h7 class="card-title title-ellipsis"><span class="bi-circle-fill"></span></h7>
-                    <p class="card-text text-ellipsis text-muted"></p>
-                </div>
-                <div class="card-footer">
-                    <div class="progress" role="progressbar" style="height: 3px;" hidden>
-                        <div class="progress-bar" style="width:0%"></div>
+            <div class="kanban-item" draggable="true">
+                <div class="card">
+                    <div class="card-body">
+                        <h7 class="card-title title-ellipsis" data-bs-toggle="collapse" role="button">
+                                <span class="card-icon"></span>
+                        </h7>
+                        <p class="card-text text-muted collapse"></p>
                     </div>
-                    <a class="bi-trash3-fill" style="float: right;"></a>
-                    <a class="bi-pencil-fill" style="float: right;" data-bs-toggle="modal" data-bs-target="#taskModal"></a>
+                    <div class="card-footer">
+                        <div class="progress" role="progressbar" style="height: 3px;" hidden>
+                            <div class="progress-bar" style="width:0%"></div>
+                        </div>
+                        <a class="bi-trash3-fill" style="float: right;"></a>
+                        <a class="bi-plus-square-fill" style="float: right" data-bs-toggle="collapse" hidden></a>
+                        <a class="bi-pencil-fill" style="float: right;" data-bs-toggle="modal" data-bs-target="#taskModal"></a>
+                    </div>
                 </div>
+                <div class="card-children collapse"></div>
             </div>
         </template>
 

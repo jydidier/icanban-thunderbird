@@ -54,10 +54,18 @@
     "titleField" : {
         "message" : "Titre",
         "description" : "Nom du champ titre d'une tâche"
-    },
+    },    
     "calendarField": {
         "message" : "Calendrier",
         "description" : "Nom du champ calendrier d'une tâche"
+    },
+    "parentField": {
+        "message" : "Tâche parente",
+        "description" : "Sélection de la tâche parente"
+    },
+    "startDateField" : {
+        "message" : "Début",
+        "description" : "Nom du champ date de démarrage d'une tâche"
     },
     "dueDateField" : {
         "message" : "Fin prévue",

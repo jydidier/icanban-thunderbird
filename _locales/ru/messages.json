@@ -60,6 +60,14 @@
         "message" : "Календарь",
         "description" : "Название поля календаря задачи"
     },
+    "parentField": {
+        "message": "Родительская задача",
+        "description": "Выбор родительской задачи"
+    },
+    "startDateField": {
+        "message": "Начало",
+        "description": "Название поля даты начала задачи"
+    },    
     "dueDateField" : {
         "message" : "Дата выполнения",
         "description" : "Название поля даты выполнения задачи"

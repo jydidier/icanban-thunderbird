@@ -9,3 +9,4 @@ Part of the internationalization support was due to the i18n.js script. Its
 original source code and repository can be found there:
 <https://github.com/erosman/HTML-Internationalization>
 
+See also [LICENSE.md]

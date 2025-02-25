@@ -7,6 +7,7 @@
 import './i18n.js';
 
 import * as JCAL from './jcal.js';
+import {marked} from './marked.esm.js';
 
 let mc = (globalThis.messenger !== undefined) ?
     messenger.calendar:(await import('./calendar_front.js'));
@@ -69,12 +70,14 @@ const saveTaskButton = document.getElementById('saveTask');
 const saveTask = async () => {
     let title = document.getElementById('taskTitle').value;
     let description = document.getElementById('taskDescription').value;
+    let startDate = document.getElementById('taskStartDate').value;
     let dueDate = document.getElementById('taskDueDate').value;
     let percent = document.getElementById('taskPercentComplete').value;
     let status = document.getElementById('taskStatus').value;
     let priority = document.getElementById('taskPriority').value;
     let id = taskModal.dataset.id;  
     let calendarId = taskModal.dataset.calendarId;
+    let parent = document.getElementById('taskParent').value;
     let newCalendarId = document.getElementById('taskCalendar').value;
 
 
@@ -89,6 +92,19 @@ const saveTask = async () => {
     if (dueDate !== null && dueDate !== item.due) {
         item.due = (new Date(dueDate)).toISOString(); 
     }
+    if (startDate && startDate !== null && startDate !== item.dtstart) {
+        item.dtstart = (new Date(startDate)).toISOString();
+    }
+
+    if (!parent) {
+        if (item.relatedTo/*xParent*/) {
+            item.relatedTo/*xParent*/ = '';
+        }
+    }
+    if (parent && parent !== item.relatedTo/*xParent*/) {
+        item.relatedTo/*xParent*/ = parent;
+        item.setPropertyParameter('related-to', 'value', 'TEXT');
+    }   
     if (percent !== item.percentComplete) {
         item.percentComplete = parseInt(percent);
     }
@@ -96,6 +112,7 @@ const saveTask = async () => {
         item.priority = parseInt(priority);
     }
     item.status = status;
+    console.log(item.data);
 
     if (id !== "null") {
         item.uid = id;
@@ -120,6 +137,7 @@ if (taskModal) {
         let item = {
             summary: "",
             description: "",
+            dtstart: "",
             due: "",
             percentComplete: 0,
             status: "NEEDS-ACTION",
@@ -139,12 +157,14 @@ if (taskModal) {
         document.getElementById('taskDescription').value = item.description;
         document.getElementById('taskPriority').value = item.priority;
         document.getElementById('taskDueDate').value = item.due?item.due:'';
+        document.getElementById('taskStartDate').value = item.dtstart?item.dtstart:'';
         document.getElementById('taskPercentComplete').value = item.percentComplete;
         document.getElementById('taskStatus').value = item.status;
         taskModal.dataset.id = id;
         taskModal.dataset.calendarId = calendarId;
 
         document.querySelectorAll('#taskCalendar option').forEach(option => option.remove());
+        document.querySelectorAll('#taskParent option').forEach(option => option.remove());
 
         let calendars = await mc.calendars.query({tasksSupported: true});
         calendars.sort( 
@@ -156,6 +176,20 @@ if (taskModal) {
             document.getElementById('taskCalendar').add(option);
         });
         document.getElementById('taskCalendar').value = calendarId;
+
+        if (calendarId) {
+            // put here all that is necessary for populating parent tasks
+            let items = await mc.items.query({type: 'task', returnFormat: 'jcal', calendarId: calendarId});
+            items.forEach(item => {
+                let todo = asTodo(item);
+                if (id === item.id) return;
+                let option = document.createElement('option');
+                option.value = item.id;
+                option.text = todo.summary;
+                document.getElementById('taskParent').add(option);
+            });
+            document.getElementById('taskParent').value = id;
+        }
 
     });
 }
@@ -354,6 +388,7 @@ let populateBoard = async () => {
     }
 
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
+    let parentMap = new Map();    
     for(const element of items) {
         let todo = asTodo(element);
 
@@ -369,12 +404,23 @@ let populateBoard = async () => {
             });
             let calendar = await mc.calendars.get(element.calendarId);
 
-            card.style.borderColor = calendar.color;
-            card.querySelector('.bi-circle-fill').style.color = calendar.color;
+            card.querySelector('.card').style.borderColor = calendar.color;
             card.querySelector('.card-title').appendChild( 
                 document.createTextNode(' ' + todo.summary + ' ')
             );
-            card.querySelector('.card-text').innerHTML = todo.description?.replace(/\n/g, '<br>') || '';
+
+            if (todo.description) {
+                card.querySelector('.card-text').innerHTML = todo.description?marked.parse(todo.description):''; // todo.description?.replace(/\n/g, '<br>') || '';
+                card.querySelector('.card-text').id = `collapse-${element.id}`;
+                card.querySelector('.card-title').dataset.bsTarget = `#collapse-${element.id}`;
+                card.querySelector('.card-icon').classList.add('bi-caret-down-square-fill');
+                card.querySelector('.card-icon').style.color = `color-mix(in srgb, black 10%, ${calendar.color} 90%)`;
+            } else {
+                card.querySelector('.card-icon').classList.add('bi-circle-fill');
+                card.querySelector('.card-icon').style.color = calendar.color;
+            }
+
+
 
             let cardFooter = card.querySelector('.card-footer');
             if (todo.due) {
@@ -445,11 +491,29 @@ let populateBoard = async () => {
             let list = document.getElementById(todo.status);
             counts[todo.status] += 1;
             
-            list.appendChild(card);
+            // elements may not be in the DOM yet
+            if (todo.relatedTo/*xParent*/) {
+                parentMap.set(todo.id, {parent: todo.relatedTo/*xParent*/, card: card});
+            } else {
+                list.appendChild(card);
+            }
             document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
             document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
             document.getElementById("completed-count").textContent = counts["COMPLETED"];
         }
+    }
+
+    // not good yet
+    while (parentMap.size > 0) {
+        parentMap.forEach((value,key) => {            
+            let parent = document.getElementById(value.parent);
+            if (parent) {
+                parent.querySelector('.card-children').appendChild(value.card);
+                parent.querySelector('.bi-plus-square-fill').hidden = false;
+                parent.querySelector('.bi-plus-square-fill').dataset.bsTarget = `#${value.parent} .card-children`;
+                parentMap.delete(key);
+            }
+        });
     }
 
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];

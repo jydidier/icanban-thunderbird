@@ -37,7 +37,7 @@ const TodoProperties = {
     //'url':
     //'rrule'
     'due' : { type: 'date-time', unique: true, conflict: 'duration'},
-    'duration': { type: 'duration', unique: true, conflict: 'due'}
+    'duration': { type: 'duration', unique: true, conflict: 'due'},
     // starting from this point, all properties may not be unique
     //'attach' : { type: },
     //'attendee'
@@ -46,7 +46,8 @@ const TodoProperties = {
     //'contact'
     //'exdate'
     //'rstatus'
-    //'related-to'
+    'related-to' : { type: 'text', unique: true},
+    'x-parent' : { type: 'text', unique: true}
     //'resources'
     //'rdate'
     //'x-prop'
@@ -106,6 +107,14 @@ class Component {
                 this[entry[0]] = entry[1];
             }
         });
+    }
+
+    setPropertyParameter(property, parameter, value) {
+        this.#data[1].forEach(elt => {
+            if (elt[0] === property) {
+                elt[1][parameter] = value;
+            }
+        });        
     }
 
     generateProperties(properties) {

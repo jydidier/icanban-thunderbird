@@ -21,3 +21,7 @@ body {
 .kanban-item {
     margin: 3px;
 }
+
+.card-children {
+    margin-left: 2em;
+}
