@@ -63,6 +63,10 @@
         "message" : "Tâche parente",
         "description" : "Sélection de la tâche parente"
     },
+    "noParentTask" : {
+        "message" : "Aucune",
+        "description" : "Intitulé d'une tâche sans parent"
+    },
     "startDateField" : {
         "message" : "Début",
         "description" : "Nom du champ date de démarrage d'une tâche"
@@ -123,8 +127,12 @@
         "message" : "Calendriers",
         "description" : "Filtre par calendrier"
     },
+    "calendarCapabilityLabel" : {
+        "message" : "Calendrier gérant les tâches explicitement",
+        "description" : "Libellé pour la bascule concernant les calendriers  gérant les tâches explicitement"
+    },
     "allCalendarsLabel" : {
-        "message" : "Tous les calendriers",
+        "message" : "Tous les calendriers ci-dessous",
         "description" : "Libellé pour la bascule concernant les calendriers"
     },
     "allPrioritiesLabel" : {

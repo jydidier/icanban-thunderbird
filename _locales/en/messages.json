@@ -63,6 +63,10 @@
         "message": "Parent task",
         "description": "Selection of the parent task"
     },
+    "noParentTask" : {
+        "message" : "None",
+        "description" : "No parent task"
+    },
     "startDateField": {
         "message": "Start",
         "description": "Name of the task start date field"
@@ -123,8 +127,12 @@
         "message" : "Calendars",
         "description" : "Filter by calendar"
     },
+    "calendarCapabilityLabel" : {
+        "message" : "Only calendars managing tasks",
+        "description" : "Label for checking calendar capabilities"
+    },
     "allCalendarsLabel" : {
-        "message" : "All calendars",
+        "message" : "All calendars below",
         "description" : "Label for all calendars switch"
     },
     "allPrioritiesLabel" : {

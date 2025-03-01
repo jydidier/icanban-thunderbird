@@ -63,6 +63,10 @@
         "message": "親タスク",
         "description": "親タスクの選択"
     },
+    "noParentTask" : {
+        "message": "なし",
+        "description": "親タスクなし"
+    },    
     "startDateField": {
         "message": "開始",
         "description": "タスクの開始日フィールド名"
@@ -123,8 +127,12 @@
         "message": "カレンダー",
         "description": "カレンダーによるフィルター"
     },
+    "calendarCapabilityLabel" : {
+        "message": "タスクを管理するカレンダーのみ",
+        "description": "カレンダーの機能を確認するためのラベル"
+    },    
     "allCalendarsLabel": {
-        "message": "すべてのカレンダー",
+        "message": "以下のすべてのカレンダー",
         "description": "すべてのカレンダー用スイッチのラベル"
     },
     "allPrioritiesLabel": {

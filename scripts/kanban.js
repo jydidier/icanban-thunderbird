@@ -14,7 +14,26 @@ let mc = (globalThis.messenger !== undefined) ?
 
 let filter = {};
 let sort = null;
+let capability = {};
 const categories = new Set();
+
+
+/* HELPER FUNCTIONS */
+let setStorage = async (key, value) => {
+    if( globalThis.browser !== undefined) {
+        await browser.storage.local.set({key: value});
+    } else {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+};
+
+let getStorage = async (key) => {
+    if (globalThis.browser !== undefined) {
+        return await browser.storage.local.get(key);
+    } else {
+        return JSON.parse(localStorage.getItem(key));
+    }
+};
 
 /* CONVERSION OF AN ITEM AS A TODO COMPONENT */
 
@@ -51,7 +70,12 @@ let drop = async (event) => {
         let cmp = await mc.items.get(data.calendarId, data.id, { returnFormat: "jcal" });
         let jtodo = asTodo(cmp);
         jtodo.status = target.id;
-        if (jtodo.status === "COMPLETED") { jtodo.percentComplete = 100; } else { jtodo.percentComplete = 0; jtodo.completed=undefined;}
+        if (jtodo.status === "COMPLETED") { 
+            jtodo.percentComplete = 100; 
+        } else { 
+            jtodo.percentComplete = 0; 
+            jtodo.completed=undefined;
+        }
         await mc.items.update(data.calendarId, data.id, { format: "jcal", item: jtodo.data });
     }
 };
@@ -97,14 +121,20 @@ const saveTask = async () => {
     }
 
     if (!parent) {
-        if (item.relatedTo/*xParent*/) {
-            item.relatedTo/*xParent*/ = '';
+        if (item.relatedTo) {
+            item.relatedTo = '';
+        }
+        if (item.xIcanbanParent) {
+            item.xIcanbanParent = '';
         }
     }
-    if (parent && parent !== item.relatedTo/*xParent*/) {
-        item.relatedTo/*xParent*/ = parent;
-        item.setPropertyParameter('related-to', 'value', 'TEXT');
+    if (parent && parent !== item.relatedTo) {
+        item.relatedTo = parent;
     }   
+    if (parent && parent !== item.xIcanbanParent) {
+        item.xIcanbanParent = parent;
+    }   
+
     if (percent !== item.percentComplete) {
         item.percentComplete = parseInt(percent);
     }
@@ -166,12 +196,13 @@ if (taskModal) {
         document.querySelectorAll('#taskCalendar option').forEach(option => option.remove());
         document.querySelectorAll('#taskParent option').forEach(option => option.remove());
 
-        let calendars = await mc.calendars.query({tasksSupported: true});
+        let calendars = await mc.calendars.query(capability);
         calendars.sort( 
             (a, b) => a.name.localeCompare(b.name) 
         ).forEach(calendar => {
             let option = document.createElement('option');
             option.value = calendar.id;
+            option.style.color = 'red';
             option.text = calendar.name;
             document.getElementById('taskCalendar').add(option);
         });
@@ -180,6 +211,12 @@ if (taskModal) {
         if (calendarId) {
             // put here all that is necessary for populating parent tasks
             let items = await mc.items.query({type: 'task', returnFormat: 'jcal', calendarId: calendarId});
+            let defaultOption = document.createElement('option');
+            defaultOption.text = browser.i18n.getMessage("noParentTask");
+            defaultOption.selected = !item.relatedTo && !item.xIcanbanParent;
+            defaultOption.value = '';
+            document.getElementById('taskParent').add(defaultOption);
+
             items.forEach(item => {
                 let todo = asTodo(item);
                 if (id === item.id) return;
@@ -188,7 +225,9 @@ if (taskModal) {
                 option.text = todo.summary;
                 document.getElementById('taskParent').add(option);
             });
-            document.getElementById('taskParent').value = id;
+            if (item.relatedTo || item.xIcanbanParent) {    
+                document.getElementById('taskParent').value = item.relatedTo ?? item.xIcanbanParent;
+            }
         }
 
     });
@@ -200,24 +239,35 @@ const allCalendars = document.getElementById('allCalendars');
 const applyFilterButton = document.getElementById('applyFilter');
 const allPriorities = document.getElementById('allPriorities');
 
+let populateCalendars = (calendars, filterList) => {
+    filterList.innerHTML = "";
+    calendars.sort( (a,b) => a.name.localeCompare(b.name) ).forEach(calendar => {
+        let filterItem = document.createElement('div');
+        filterItem.classList.add('form-check');
+        filterItem.innerHTML = `
+            <input class="form-check-input" type="checkbox" value="${calendar.id}" id="filter-${calendar.id}" ${allCalendars.value?'disabled':''} ${filter.calendarId && filter.calendarId.includes(calendar.id)?'checked':''}>
+            <label class="form-check-label" for="filter-${calendar.id}">
+                <i class="bi bi-circle-fill" style="color:${calendar.color}"></i>
+                ${calendar.name}
+            </label>
+        `;
+        filterList.appendChild(filterItem);
+    });
+
+    let checkboxesCal = document.querySelectorAll('#calendarList input');
+    checkboxesCal.forEach(checkbox => {
+        checkbox.disabled = allCalendars.checked;
+    });
+};
+
 if (filterModal) {
     filterModal.addEventListener('show.bs.modal', async (event) => {
-        let calendars = await mc.calendars.query({tasksSupported: true});
+        let calendars = await mc.calendars.query(capability);
         let filterList = document.getElementById('calendarList');
         let allCalendars = document.getElementById('allCalendars');
-        filterList.innerHTML = "";
-        calendars.sort( (a,b) => a.name.localeCompare(b.name) ).forEach(calendar => {
-            let filterItem = document.createElement('div');
-            filterItem.classList.add('form-check');
-            filterItem.innerHTML = `
-                <input class="form-check-input" type="checkbox" value="${calendar.id}" id="filter-${calendar.id}" ${allCalendars.value?'disabled':''} ${filter.calendarId && filter.calendarId.includes(calendar.id)?'checked':''}>
-                <label class="form-check-label" for="filter-${calendar.id}">
-                    <i class="bi bi-circle-fill" style="color:${calendar.color}"></i>
-                    ${calendar.name}
-                </label>
-            `;
-            filterList.appendChild(filterItem);
-        });
+        let calendarCapability = document.getElementById('calendarCapability');
+
+        populateCalendars(calendars, filterList);   
 
         if (filter.calendarId && filter.calendarId.length > 0) {
             allCalendars.checked = false;
@@ -228,9 +278,16 @@ if (filterModal) {
             document,querySelector(`#priorityList input[value=${filter.priority}]`).checked = true;
         }
 
-        let checkboxesCal = document.querySelectorAll('#calendarList input');
-        checkboxesCal.forEach(checkbox => {
-            checkbox.disabled = allCalendars.checked;
+        if (capability.tasksSupported) {
+            calendarCapability.checked = true;
+        } else {
+            calendarCapability.checked = false;
+        }
+
+        calendarCapability.addEventListener('change', async (event) => {
+            capability = event.target.checked ? {tasksSupported: true} : {};
+            let calendars = await mc.calendars.query(capability);
+            populateCalendars(calendars, filterList);
         });
 
         let checkboxesPrio = document.querySelectorAll('#priorityList input');
@@ -263,11 +320,11 @@ if (applyFilterButton) {
             filter.priority = priorities[0];
         }
 
-        if( globalThis.browser !== undefined) {
-            await browser.storage.local.set({"icanban-filter": filter});
-        } else {
-            localStorage.setItem("icanban-filter", JSON.stringify(filter));
-        }
+        let calendarCapability = document.getElementById('calendarCapability');
+        capability = calendarCapability.checked ? {tasksSupported: true} : {};
+
+        setStorage("icanban-capability", capability);
+        setStorage("icanban-filter", filter);
         refreshBoard();
     });
 }
@@ -336,11 +393,7 @@ if (applySortButton) {
     applySortButton.addEventListener('click', async (event) => {
         let sortValue = Array.from(document.querySelectorAll('#sortList input')).find(input => input.checked).value;
         sort = (sortValue === "none") ? null : sortStrategies[sortValue];
-        if( globalThis.browser !== undefined) {
-            await browser.storage.local.set({ "icanban-sort": sortValue} );   
-        } else {
-            localStorage.setItem("icanban-sort", JSON.stringify(sortValue));
-        }
+        setStorage("icanban-sort", sortValue);
         refreshBoard();
     });
 }
@@ -492,8 +545,9 @@ let populateBoard = async () => {
             counts[todo.status] += 1;
             
             // elements may not be in the DOM yet
-            if (todo.relatedTo/*xParent*/) {
-                parentMap.set(todo.id, {parent: todo.relatedTo/*xParent*/, card: card});
+            if (todo.relatedTo || todo.xIcanbanParent) {
+                console.log("added to parent map", todo);
+                parentMap.set(element.id, {parent: todo.relatedTo ?? todo.xIcanbanParent, card: card, todo: todo});
             } else {
                 list.appendChild(card);
             }
@@ -504,14 +558,25 @@ let populateBoard = async () => {
     }
 
     // not good yet
-    while (parentMap.size > 0) {
-        parentMap.forEach((value,key) => {            
+    let oldSize = parentMap.size + 1;
+    while (parentMap.size > 0 && oldSize > parentMap.size) {
+        oldSize = parentMap.size;
+        parentMap.forEach((value,key) => {      
+            console.log("trying to add", value);      
             let parent = document.getElementById(value.parent);
             if (parent) {
                 parent.querySelector('.card-children').appendChild(value.card);
                 parent.querySelector('.bi-plus-square-fill').hidden = false;
                 parent.querySelector('.bi-plus-square-fill').dataset.bsTarget = `#${value.parent} .card-children`;
                 parentMap.delete(key);
+            } else {
+                console.log("failed to add", value);    
+                // we have to check if the requested element is in the item list
+                let item = items.find(item => item.id === value.parent);
+                if (!item) {
+                    document.getElementById(value.todo.status).appendChild(value.card);
+                    parentMap.delete(key);
+                }
             }
         });
     }
@@ -535,14 +600,10 @@ let refreshBoard = async () => {
 
 let filterPrefs = {};
 let sortPrefs = {};
-if (globalThis.browser !== undefined) {
-    filterPrefs = await browser.storage.local.get("icanban-filter");
-    sortPrefs = await browser.storage.local.get("icanban-sort");
-} else {
-    filterPrefs["icanban-filter"] = JSON.parse(localStorage.getItem("icanban-filter")) ?? undefined;
-    sortPrefs["icanban-sort"] = JSON.parse(localStorage.getItem("icanban-sort")) ?? undefined;
 
-}
+filterPrefs = await getStorage("icanban-filter");
+sortPrefs = await getStorage("icanban-sort");
+capability = await getStorage("icanban-capability");
 
 if (filterPrefs["icanban-filter"] !== undefined) {
     filter = filterPrefs["icanban-filter"];

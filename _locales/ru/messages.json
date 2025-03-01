@@ -64,6 +64,10 @@
         "message": "Родительская задача",
         "description": "Выбор родительской задачи"
     },
+    "noParentTask" : {
+        "message": "Нет",
+        "description": "Нет родительской задачи"
+    },    
     "startDateField": {
         "message": "Начало",
         "description": "Название поля даты начала задачи"
@@ -124,8 +128,12 @@
         "message" : "Календари",
         "description" : "Фильтр по календарю"
     },
+    "calendarCapabilityLabel" : {
+        "message": "Только календари, управляющие задачами",
+        "description": "Метка для проверки возможностей календаря"
+    },    
     "allCalendarsLabel" : {
-        "message" : "Все календари",
+        "message" : "Все календари ниже",
         "description" : "Метка для переключателя всех календарей"
     },
     "allPrioritiesLabel" : {

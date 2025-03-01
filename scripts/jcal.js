@@ -46,8 +46,8 @@ const TodoProperties = {
     //'contact'
     //'exdate'
     //'rstatus'
-    'related-to' : { type: 'text', unique: true},
-    'x-parent' : { type: 'text', unique: true}
+    'related-to' : { type: 'text'},
+    'x-icanban-parent' : { type: 'text', unique: true}
     //'resources'
     //'rdate'
     //'x-prop'
