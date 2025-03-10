@@ -15,6 +15,7 @@ let mc = (globalThis.messenger !== undefined) ?
 let filter = {};
 let sort = null;
 let capability = {};
+let compact = {mode : false};
 const categories = new Set();
 
 
@@ -86,6 +87,33 @@ document.getElementById("IN-PROCESS").parentElement.addEventListener("drop", dro
 document.getElementById("NEEDS-ACTION").parentElement.addEventListener("dragover", dragover);
 document.getElementById("COMPLETED").parentElement.addEventListener("dragover", dragover);
 document.getElementById("IN-PROCESS").parentElement.addEventListener("dragover", dragover);
+
+
+/* Compact mode setup */
+
+const compactModeSwitch = document.getElementById('compactModeSwitch');
+
+let toggleAllCollapse = function(status) {
+    document.querySelectorAll('.card-text').forEach(node => {
+        if (status) {
+            node.classList.remove('collapse.show')
+            node.classList.add('collapse')
+        } else {
+            node.classList.remove('collapse');
+            node.classList.add('collapse.show')
+        }
+    });
+}
+
+if (compactModeSwitch) {
+    compactModeSwitch.addEventListener('change', async (evt) => {
+        let selfChecked = evt.target.checked;
+        console.log({mode : selfChecked});
+        await setStorage("icanban-compact-mode", { mode: selfChecked });
+        toggleAllCollapse(selfChecked);
+    });
+}
+
 
 /* Modal setup for task edition */
 const taskModal = document.getElementById('taskModal');
@@ -604,6 +632,7 @@ let sortPrefs = {};
 filterPrefs = await getStorage("icanban-filter");
 sortPrefs = await getStorage("icanban-sort");
 capability = await getStorage("icanban-capability");
+compact = await getStorage("icanban-compact-mode");
 
 if (filterPrefs["icanban-filter"] !== undefined) {
     filter = filterPrefs["icanban-filter"];
@@ -613,6 +642,12 @@ if (sortPrefs["icanban-sort"] !== undefined) {
 }
 
 await populateBoard();
+
+if (compactModeSwitch) {
+    compactModeSwitch.checked = compact.mode;
+    console.log('compactMode', compact.mode);
+    toggleAllCollapse(compact.mode);
+}
 
 if (globalThis.messenger !== undefined) {
     mc.items.onCreated.addListener(refreshBoard);

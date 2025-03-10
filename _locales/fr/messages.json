@@ -15,6 +15,10 @@
         "message" : "Tableau Kanban",
         "description" : "Nom de la page HTML affichant le tableau Kanban"
     },
+    "compactModeSwitchLabel" : {
+        "message" : "Mode compact",
+        "description" : "Nom de la bascule liée au mode compact"
+    },
     "filterButton": {
         "message" : " Filtrer",
         "description" : "Nom du bouton filtrer"

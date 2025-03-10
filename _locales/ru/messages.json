@@ -15,6 +15,10 @@
         "message" : "Доска Канбан",
         "description" : "Название HTML-страницы, отображающей доску Канбан"
     },
+    "compactModeSwitchLabel" : {
+        "message": "Компактный режим",
+        "description": "Название переключателя, связанного с компактным режимом"
+    },    
     "filterButton": {
         "message" : " Фильтры",
         "description" : "Название кнопки фильтра"

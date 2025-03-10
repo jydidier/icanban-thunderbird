@@ -15,6 +15,10 @@
         "message": "カンバンボード",
         "description": "カンバンボードを表示するHTMLページの名前"
     },
+    "compactModeSwitchLabel" : {
+        "message": "コンパクトモード",
+        "description": "コンパクトモードに関連するトグルの名前"
+    },
     "filterButton": {
         "message": " フィルター",
         "description": "フィルターボタンの名前"

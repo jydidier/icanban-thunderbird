@@ -15,6 +15,10 @@
         "message" : "Kanban board",
         "description" : "Name of the HTML page displaying the Kanban board"
     },
+    "compactModeSwitchLabel" : {
+        "message" : "Compact mode",
+        "description" : "Name of the compact mode switch"
+    },
     "filterButton": {
         "message" : " Filters",
         "description" : "Name of the filter button"
