@@ -96,11 +96,9 @@ const compactModeSwitch = document.getElementById('compactModeSwitch');
 let toggleAllCollapse = function(status) {
     document.querySelectorAll('.card-text').forEach(node => {
         if (status) {
-            node.classList.remove('collapse.show')
-            node.classList.add('collapse')
+            node.classList.replace('collapse.show','collapse')
         } else {
-            node.classList.remove('collapse');
-            node.classList.add('collapse.show')
+            node.classList.replace('collapse','collapse.show');
         }
     });
 }
@@ -119,7 +117,17 @@ if (compactModeSwitch) {
 const taskModal = document.getElementById('taskModal');
 const saveTaskButton = document.getElementById('saveTask');
 
-const saveTask = async () => {
+const saveTask = async (evt) => {
+    //  here, we must add some controls
+    let form = document.getElementById('taskForm');
+    if (!form.checkValidity()) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        alert(browser.i18n.getMessage('alertTask'));
+        return;
+    }
+
+
     let title = document.getElementById('taskTitle').value;
     let description = document.getElementById('taskDescription').value;
     let startDate = document.getElementById('taskStartDate').value;
@@ -183,6 +191,9 @@ const saveTask = async () => {
         item.type="task";
         await mc.items.create(newCalendarId, {type: 'task', format: 'jcal', item: item.data});
     }
+
+    let modal = new bootstrap.Modal("#taskModal");
+    modal.hide();
 }
 
 saveTaskButton.addEventListener('click', saveTask);

@@ -62,25 +62,25 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="taskForm">
+                        <form id="taskForm" class="needs-validation">
                             <div class="mb-3">
-                                <label for="taskTitle" class="form-label" data-i18n="titleField"></label>
+                                <label for="taskTitle" class="form-label required" data-i18n="titleField"></label>
                                 <input type="text" class="form-control" id="taskTitle" name="title" required/>
                             </div>
                             <div class="mb-3">
                                 <label for="taskParent" class="form-label" data-i18n="parentField"></label>
-                                <select class="form-select" id="taskParent" name="parent" required>
+                                <select class="form-select" id="taskParent" name="parent">
                                 </select>
                             </div>
                             <div class="row g-2">
                                 <div class="col-md">
-                                    <label for="taskCalendar" class="form-label" data-i18n="calendarField"></label>
+                                    <label for="taskCalendar" class="form-label required" data-i18n="calendarField"></label>
                                     <select class="form-select" id="taskCalendar" name="calendar" required>
                                     </select>
                                 </div>
                                 <div class="col-md">
                                     <label for="taskPriority" class="form-label" data-i18n="priorityField"></label>
-                                    <select class="form-select" id="taskPriority" name="priority" required>
+                                    <select class="form-select" id="taskPriority" name="priority">
                                         <option value=0 data-i18n="nonePriority"></option>
                                         <option value=9 data-i18n="lowPriority"></option>
                                         <option value=5 data-i18n="mediumPriority"></option>
@@ -95,9 +95,9 @@
                                     <input type="datetime-local" class="form-control" id="taskStartDate" name="startDate" />
                                 </div>
                                 <div class="col-md">
-                                    <label for="taskDueDate" class="form-label" data-i18n="dueDateField">
+                                    <label for="taskDueDate" class="form-label required" data-i18n="dueDateField">
                                     </label>
-                                    <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate" required/>
+                                    <input type="datetime-local" class="form-control" id="taskDueDate" name="dueDate"/>
                                 </div>
                             </div>
                             <div class="row g-2">
@@ -117,13 +117,13 @@
 
                             <div class="mb-3">
                                 <label for="taskDescription" class="form-label" data-i18n="descriptionField"></label>
-                                <textarea class="form-control" id="taskDescription" name="description" rows=5 required></textarea>
+                                <textarea class="form-control" id="taskDescription" name="description" rows=5></textarea>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="closeButton"></button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveTask" data-i18n="saveButton"></button>
+                        <button type="button" class="btn btn-primary" id="saveTask" data-i18n="saveButton"></button>
                     </div>
                 </div>
             </div>

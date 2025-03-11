@@ -123,6 +123,10 @@
         "message": "適用",
         "description": "適用ボタンの名前"
     },
+    "alertTask" : {
+        "message": "新しいタスクを送信する前に、必須フィールドを入力する必要があります。",
+        "description": "タスクが正しく定義されていない場合に表示される警告メッセージ"
+    },
     "filterHeader": {
         "message": "フィルター設定",
         "description": "フィルターモーダルダイアログのヘッダー"

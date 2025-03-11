@@ -123,6 +123,10 @@
         "message" : "Apply",
         "description" : "Name of the apply button"
     },
+    "alertTask" : {
+        "message" : "You must fill required field before submitting a new task.",
+        "description" : "Alert message displayed when a task is not well defined"
+    },
     "filterHeader" : {
         "message" : "Filter settings",
         "description" : "Header of the filter modal dialog"

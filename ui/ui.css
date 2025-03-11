@@ -25,3 +25,9 @@ body {
 .card-children {
     margin-left: 2em;
 }
+
+.required::after {
+    content: " * ";
+    color: darkred;
+
+}

@@ -123,6 +123,10 @@
         "message" : "Appliquer",
         "description" : "Nom du bouton appliquer"
     },
+    "alertTask" : {
+        "message" : "Vous devez renseigner les champs obligatoires avant d'enregistrer une tâche.",
+        "description" : "Message affiché lorsqu'une tâche n'est pas définie correctement"
+    },
     "filterHeader" : {
         "message" : "Paramètres de filtrage",
         "description" : "En-tête de la boîte de dialogue filtrer"
