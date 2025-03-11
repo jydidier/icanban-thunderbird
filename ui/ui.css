@@ -29,5 +29,4 @@ body {
 .required::after {
     content: " * ";
     color: darkred;
-
 }

@@ -22,7 +22,9 @@ const categories = new Set();
 /* HELPER FUNCTIONS */
 let setStorage = async (key, value) => {
     if( globalThis.browser !== undefined) {
-        await browser.storage.local.set({key: value});
+        let obj = {};
+        obj[key] = value;
+        await browser.storage.local.set(obj);
     } else {
         localStorage.setItem(key, JSON.stringify(value));
     }
@@ -30,7 +32,8 @@ let setStorage = async (key, value) => {
 
 let getStorage = async (key) => {
     if (globalThis.browser !== undefined) {
-        return await browser.storage.local.get(key);
+        let obj = await browser.storage.local.get(key);
+        return obj[key];
     } else {
         return JSON.parse(localStorage.getItem(key));
     }
@@ -106,7 +109,6 @@ let toggleAllCollapse = function(status) {
 if (compactModeSwitch) {
     compactModeSwitch.addEventListener('change', async (evt) => {
         let selfChecked = evt.target.checked;
-        console.log({mode : selfChecked});
         await setStorage("icanban-compact-mode", { mode: selfChecked });
         toggleAllCollapse(selfChecked);
     });
@@ -149,7 +151,7 @@ const saveTask = async (evt) => {
         item.summary = title;
     if (description !== item.description)
         item.description = description;
-    if (dueDate !== null && dueDate !== item.due) {
+    if (dueDate && dueDate !== null && dueDate !== item.due) {
         item.due = (new Date(dueDate)).toISOString(); 
     }
     if (startDate && startDate !== null && startDate !== item.dtstart) {
@@ -178,8 +180,7 @@ const saveTask = async (evt) => {
         item.priority = parseInt(priority);
     }
     item.status = status;
-    console.log(item.data);
-
+    
     if (id !== "null") {
         item.uid = id;
         await mc.items.update(calendarId, id, {format: 'jcal', item: item.data});
@@ -192,7 +193,7 @@ const saveTask = async (evt) => {
         await mc.items.create(newCalendarId, {type: 'task', format: 'jcal', item: item.data});
     }
 
-    let modal = new bootstrap.Modal("#taskModal");
+    let modal = bootstrap.Modal.getInstance(document.getElementById("taskModal"));
     modal.hide();
 }
 
@@ -623,6 +624,7 @@ let populateBoard = async () => {
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
     document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
     document.getElementById("completed-count").textContent = counts["COMPLETED"];
+    toggleAllCollapse(compact.mode);
 };
 
 let inRefresh = false;
@@ -645,20 +647,21 @@ sortPrefs = await getStorage("icanban-sort");
 capability = await getStorage("icanban-capability");
 compact = await getStorage("icanban-compact-mode");
 
-if (filterPrefs["icanban-filter"] !== undefined) {
-    filter = filterPrefs["icanban-filter"];
+if (filterPrefs) {
+    filter = filterPrefs
 } 
-if (sortPrefs["icanban-sort"] !== undefined) {
-    sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs["icanban-sort"]];   
+if (sortPrefs) {
+    sort = (sortPrefs === "none") ? null : sortStrategies[sortPrefs];   
+}
+
+if (compactModeSwitch) {
+    compactModeSwitch.checked = compact.mode;
 }
 
 await populateBoard();
 
-if (compactModeSwitch) {
-    compactModeSwitch.checked = compact.mode;
-    console.log('compactMode', compact.mode);
-    toggleAllCollapse(compact.mode);
-}
+/*    toggleAllCollapse(compact.mode);
+}*/
 
 if (globalThis.messenger !== undefined) {
     mc.items.onCreated.addListener(refreshBoard);
