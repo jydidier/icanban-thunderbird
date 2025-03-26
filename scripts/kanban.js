@@ -581,7 +581,7 @@ let populateBoard = async () => {
                     await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
             });
 
-            let list = document.getElementById(todo.status);
+            let list = document.getElementById(todo.status ?? 'NEEDS-ACTION');
             counts[todo.status] += 1;
             
             // elements may not be in the DOM yet
@@ -642,10 +642,10 @@ let refreshBoard = async () => {
 let filterPrefs = {};
 let sortPrefs = {};
 
-filterPrefs = await getStorage("icanban-filter");
-sortPrefs = await getStorage("icanban-sort");
-capability = await getStorage("icanban-capability");
-compact = await getStorage("icanban-compact-mode");
+filterPrefs = await getStorage("icanban-filter") ?? {};
+sortPrefs = await getStorage("icanban-sort") ?? {};
+capability = await getStorage("icanban-capability") ?? {};
+compact = await getStorage("icanban-compact-mode") ?? {mode: false};
 
 if (filterPrefs) {
     filter = filterPrefs
