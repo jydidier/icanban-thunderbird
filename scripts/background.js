@@ -35,6 +35,6 @@ browser.menus.onClicked.addListener(async (info, tab) => {
     }
 });
 
-browser.browserAction.onClicked.addListener(async (...args) => {
+browser.action.onClicked.addListener(async (...args) => {
     createKanbanBoard();
  });

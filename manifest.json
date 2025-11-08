@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "default_locale" : "en",
     "name": "__MSG_extensionName__",
     "description": "__MSG_extensionDescription__",
@@ -13,9 +13,10 @@
             "strict_max_version": "144.*"
         }
     },
-    "browser_action": {
+    "action": {
         "default_title": "Kanban",
-        "default_icon": "images/icanban_32x32.png"
+        "default_icon": "images/icanban_32x32.png",
+        "allowed_spaces": []
     },
     "background": {
         "scripts": [
