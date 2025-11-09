@@ -5,7 +5,9 @@ This repository is also embedding minified version of:
 - bootstrap icons:
   <https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css>
 
-It also uses a third party library which is markedjs, expecially the file marked.esm.js that can be found there: <https://cdn.jsdelivr.net/npm/marked@15.0.7/lib/marked.esm.js>
+It also uses several third party libraries such as:
+- markedjs, expecially the file marked.esm.js: <https://cdn.jsdelivr.net/npm/marked@15.0.7/lib/marked.esm.js>
+- DOMPurify version 3.2.7: <https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js>
 
 Part of the internationalization support was due to the i18n.js script. Its
 original source code and repository can be found there:

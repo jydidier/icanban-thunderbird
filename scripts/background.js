@@ -5,14 +5,22 @@ let kanbanContext = await browser.contextualIdentities.create({
 });
 
 let kanbanMenuItem = await browser.menus.create({
-    "title": browser.i18n.getMessage("menuItem"),
-    "contexts": ["tools_menu"],
-    "icons": {
-        "16": "images/icanban_16x16.png",
-        "32": "images/icanban_32x32.png"
+        "id" : "kanbanMenuItem",
+        "title": browser.i18n.getMessage("menuItem"),
+        "contexts": ["tools_menu"],
+        "visible": true,
+        "icons": {
+            "16": "images/icanban_16x16.png",
+            "32": "images/icanban_32x32.png"
+        }
     }
-});
+);
 
+
+if (kanbanMenuItem === null) {
+    console.log(browser.runtime.lastError);
+
+};
 
 let createKanbanBoard = async () => {
     let icanbanTab = await browser.tabs.query({ 

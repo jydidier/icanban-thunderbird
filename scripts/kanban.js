@@ -4,10 +4,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/** TODO Organize extension in a more modular way */
+
 import './i18n.js';
 
 import * as JCAL from './jcal.js';
-import {marked} from './marked.esm.js';
+import {marked} from '../vendor/marked.esm.js';
 
 let mc = (globalThis.messenger !== undefined) ?
     messenger.calendar:(await import('./calendar_front.js'));
@@ -84,12 +86,12 @@ let drop = async (event) => {
     }
 };
 
-document.getElementById("NEEDS-ACTION").parentElement.addEventListener("drop", drop);
-document.getElementById("COMPLETED").parentElement.addEventListener("drop", drop);
-document.getElementById("IN-PROCESS").parentElement.addEventListener("drop", drop);
-document.getElementById("NEEDS-ACTION").parentElement.addEventListener("dragover", dragover);
-document.getElementById("COMPLETED").parentElement.addEventListener("dragover", dragover);
-document.getElementById("IN-PROCESS").parentElement.addEventListener("dragover", dragover);
+/* it is now related to columns */ 
+let kanbanLists = document.getElementsByClassName("kanban-list");
+for (let i=0; i <kanbanLists.length; i++) {
+    kanbanLists[i].parentElement.addEventListener("drop",drop);
+    kanbanLists[i].parentElement.addEventListener("dragover", dragover);
+}
 
 
 /* Compact mode setup */
@@ -460,7 +462,8 @@ if (refreshButton) {
 }
 
 /* Board setup */
-let clearBoard = () => {    
+let clearBoard = () => {
+    /** TODO change this part */    
     document.getElementById("NEEDS-ACTION").innerHTML = "";
     document.getElementById("IN-PROCESS").innerHTML = "";
     document.getElementById("COMPLETED").innerHTML = "";
@@ -480,7 +483,10 @@ let populateBoard = async () => {
         items.sort(sort);
     }
 
+    /** TODO insert here dynamic generation of columns */
     let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
+
+
     let parentMap = new Map();    
     for(const element of items) {
         let todo = asTodo(element);
@@ -525,6 +531,7 @@ let populateBoard = async () => {
                         ` ${(new Date(todo.due)).toLocaleString()} `
                     )
                 );
+                /** TODO reevaluate how a task is indicated as completed (is 100% enough) */
                 if (todo.status !== 'COMPLETED' && Date.now() > Date.parse(todo.due)) {
                     cardFooter.classList.add('text-danger');
                     cardFooter.style.fontWeight = 'bold';
@@ -532,6 +539,7 @@ let populateBoard = async () => {
             } else {
                 cardFooter.classList.add('text-muted');
             }
+            /** TODO may not be need anymore -> filter out 0% and 100% instead of status*/
             if (todo.percentComplete && todo.status === "IN-PROCESS") {
                 let cardPercent = document.createElement('span');
                 cardPercent.classList.add('bi-graph-up');
@@ -581,7 +589,9 @@ let populateBoard = async () => {
                     await mc.items.remove(event.target.dataset.calendarId, event.target.dataset.id);
             });
 
+            /** TODO Needs-action is the default column, we may need one in parameters */
             let list = document.getElementById(todo.status ?? 'NEEDS-ACTION');
+            /** TODO update the way count is performed */
             counts[todo.status] += 1;
             
             // elements may not be in the DOM yet
@@ -591,6 +601,8 @@ let populateBoard = async () => {
             } else {
                 list.appendChild(card);
             }
+
+            /** TODO  update the way actions are counted in each column */
             document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
             document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
             document.getElementById("completed-count").textContent = counts["COMPLETED"];
@@ -621,6 +633,7 @@ let populateBoard = async () => {
         });
     }
 
+    /** TODO Same code twice, check if this one is still needed anymore */
     document.getElementById("needs-action-count").textContent = counts["NEEDS-ACTION"];
     document.getElementById("in-process-count").textContent = counts["IN-PROCESS"];
     document.getElementById("completed-count").textContent = counts["COMPLETED"];

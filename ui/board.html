@@ -4,8 +4,8 @@
         <title data-i18n="boardTitle"></title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" type="text/css" href="ui.css"/>
-        <link rel="stylesheet" type="text/css" href="bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="bootstrap-icons.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../vendor/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../vendor/bootstrap-icons.min.css"/>
     </head>
     <body style="font-size: 80%;">
         <div class="container h-100">
@@ -290,7 +290,31 @@
             </div>
         </template>
 
-        <script src="../scripts/bootstrap.bundle.min.js" defer></script>
+        <!-- Column templates-->
+        <!-- status column template -->
+        <template>
+            <div class="col border-start">
+                <h5>
+                    <span class="bi-hourglass-top"></span>
+                    <b data-i18n="needsActionStatus"></b>
+                    <span class="badge bg-primary" id="needs-action-count"></span>
+                </h5>
+                <div class="kanban-list" id="NEEDS-ACTION"></div>    
+            </div>
+        </template>
+
+        <!-- category column template -->
+        <template>
+            <div class="col border-start">
+                <h5>
+                    <b></b>
+                    <span class="badge bg-primary"></span>
+                </h5>
+                <div class="kanban-list"></div>    
+            </div>
+        </template>
+
+        <script src="../vendor/bootstrap.bundle.min.js" defer></script>
         <script src="../scripts/kanban.js" type="module" defer></script>        
     </body>
 </html>
