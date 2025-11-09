@@ -282,17 +282,20 @@ const applyFilterButton = document.getElementById('applyFilter');
 const allPriorities = document.getElementById('allPriorities');
 
 let populateCalendars = (calendars, filterList) => {
-    filterList.innerHTML = "";
+    filterList.textContent = "";
     calendars.sort( (a,b) => a.name.localeCompare(b.name) ).forEach(calendar => {
         let filterItem = document.createElement('div');
         filterItem.classList.add('form-check');
-        filterItem.innerHTML = `
-            <input class="form-check-input" type="checkbox" value="${calendar.id}" id="filter-${calendar.id}" ${allCalendars.value?'disabled':''} ${filter.calendarId && filter.calendarId.includes(calendar.id)?'checked':''}>
-            <label class="form-check-label" for="filter-${calendar.id}">
-                <i class="bi bi-circle-fill" style="color:${calendar.color}"></i>
-                ${calendar.name}
-            </label>
-        `;
+        filterItem.insertAdjacentHTML(
+            'beforeend',
+            DOMPurify.sanitize(`
+                <input class="form-check-input" type="checkbox" value="${calendar.id}" id="filter-${calendar.id}" ${allCalendars.value?'disabled':''} ${filter.calendarId && filter.calendarId.includes(calendar.id)?'checked':''}>
+                <label class="form-check-label" for="filter-${calendar.id}">
+                    <i class="bi bi-circle-fill" style="color:${calendar.color}"></i>
+                    ${calendar.name}
+                </label>
+            `)
+        );
         filterList.appendChild(filterItem);
     });
 
@@ -463,10 +466,10 @@ if (refreshButton) {
 
 /* Board setup */
 let clearBoard = () => {
-    /** TODO change this part */    
-    document.getElementById("NEEDS-ACTION").innerHTML = "";
-    document.getElementById("IN-PROCESS").innerHTML = "";
-    document.getElementById("COMPLETED").innerHTML = "";
+    let kanbanLists = document.getElementsByClassName("kanban-list");
+    for (let i=0; i <kanbanLists.length; i++) {
+        kanbanLists[i].textContent = "";
+    }
 };
 
 let populateBoard = async () => {
@@ -509,7 +512,9 @@ let populateBoard = async () => {
             );
 
             if (todo.description) {
-                card.querySelector('.card-text').innerHTML = todo.description?marked.parse(todo.description):''; // todo.description?.replace(/\n/g, '<br>') || '';
+                card.querySelector('.card-text').insertAdjacentHTML(
+                    'beforeend', DOMPurify.sanitize(marked.parse(todo.description))
+                );
                 card.querySelector('.card-text').id = `collapse-${element.id}`;
                 card.querySelector('.card-title').dataset.bsTarget = `#collapse-${element.id}`;
                 card.querySelector('.card-icon').classList.add('bi-caret-down-square-fill');
