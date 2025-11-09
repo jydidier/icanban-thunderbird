@@ -160,6 +160,8 @@ const saveTask = async (evt) => {
         item.dtstart = (new Date(startDate)).toISOString();
     }
 
+    // TODO handle categories the right way
+
     if (!parent) {
         if (item.relatedTo) {
             item.relatedTo = '';
@@ -232,6 +234,35 @@ if (taskModal) {
         document.getElementById('taskStartDate').value = item.dtstart?item.dtstart:'';
         document.getElementById('taskPercentComplete').value = item.percentComplete;
         document.getElementById('taskStatus').value = item.status;
+
+        document.getElementById('taskCategories').value = 
+            Array.isArray(item.categories)?
+            item.categories.join(', '):
+            (item.categories?item.categories:'');
+
+        let catList = document.getElementById('taskCategoriesDropdown');
+        catList.textContent = '';
+        categories.forEach((key) => {
+            let li = document.createElement('li');
+            let a = document.createElement('a');
+            a.textContent=key;
+            a.target='#';
+            a.addEventListener('click', (evt) => {
+                let uiCategories = document.getElementById('taskCategories');
+                if (uiCategories.value) {
+                    if (uiCategories.value.indexOf(evt.target.textContent) === -1) {
+                        uiCategories.value += `, ${evt.target.textContent}`;
+                    }
+                } else {
+                    uiCategories.value = evt.target.textContent;
+                }
+            });
+            li.appendChild(a);
+            catList.appendChild(li);
+            /** TODO add a callback to textContent */
+        });
+
+
         taskModal.dataset.id = id;
         taskModal.dataset.calendarId = calendarId;
 
@@ -466,10 +497,18 @@ if (refreshButton) {
 
 /* Board setup */
 let clearBoard = () => {
+    /** TODO can even be more blunt */
     let kanbanLists = document.getElementsByClassName("kanban-list");
     for (let i=0; i <kanbanLists.length; i++) {
         kanbanLists[i].textContent = "";
     }
+};
+
+let setupColumns = async () => {
+    /** TODO insert here dynamic generation of columns */
+    // should return at least column names with resetted counters
+
+    return { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
 };
 
 let populateBoard = async () => {
@@ -485,10 +524,9 @@ let populateBoard = async () => {
     if (sort) {
         items.sort(sort);
     }
-
-    /** TODO insert here dynamic generation of columns */
-    let counts = { "NEEDS-ACTION": 0, "IN-PROCESS": 0, "COMPLETED": 0 };
-
+    categories.clear();
+    
+    let counts = await setupColumns();
 
     let parentMap = new Map();    
     for(const element of items) {
@@ -498,7 +536,8 @@ let populateBoard = async () => {
         if (document.getElementById(element.id) === null) {
             const template = document.getElementById('cardTemplate');
             const card = template.content.cloneNode(true).children[0];
-            //element.categories.forEach(cat => categories.add(cat));
+            if (todo.categories)
+                todo.categories.forEach(cat => categories.add(cat));
             card.id = element.id;
             card.addEventListener("dragstart", (event) => {
                 event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
@@ -556,11 +595,18 @@ let populateBoard = async () => {
                 cardProgress.style.width=''+todo.percentComplete+'%';
                 cardProgress.style.background=calendar.color;
             }
-            if (todo.categories && todo.categories.length > 0) {
+            if (todo.categories) {
                 let cardCategories = document.createElement('span');
                 cardCategories.classList.add('bi-tags-fill');
                 cardFooter.appendChild(cardCategories);
-                cardFooter.appendChild(document.createTextNode(' '+todo.categories.join(', ')));
+                cardFooter.appendChild(
+                    document.createTextNode(
+                        ' '+
+                        Array.isArray(todo.categories)?
+                            todo.categories.join(', '):
+                            todo.categories
+                    )
+                );
             }
 
             if (todo.priority) {

@@ -118,6 +118,16 @@
                                 <label for="taskDescription" class="form-label" data-i18n="descriptionField"></label>
                                 <textarea class="form-control" id="taskDescription" name="description" rows=5></textarea>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="taskCategories" class="form-label" data-i18n="categoriesField"></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="taskCategories" name="taskCategories">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <ul class="dropdown-menu" id="taskCategoriesDropdown">
+                                    </ul>
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">

@@ -111,6 +111,10 @@
         "message": "説明",
         "description": "説明フィールドの名前"
     },
+    "categoriesField" : {
+        "message" : "カテゴリー",
+        "description" : "カテゴリーのフィールド名"
+    },
     "closeButton": {
         "message": "閉じる",
         "description": "閉じるボタンの名前"

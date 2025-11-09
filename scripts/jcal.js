@@ -41,7 +41,7 @@ const TodoProperties = {
     // starting from this point, all properties may not be unique
     //'attach' : { type: },
     //'attendee'
-    //'categories'
+    'categories' : {type: 'string'},
     //'comment'
     //'contact'
     //'exdate'
@@ -128,7 +128,16 @@ class Component {
                         let result = null; 
                         self.data[1].forEach(elt => {
                             if (elt[0] === element) {
-                                result = elt[3];
+                                if (result) {
+                                    if (Array.isArray(result)) {
+                                        result.push(elt[3]);
+                                    } else {
+                                        result = [ result ];
+                                        result.push(elt[3]);
+                                    }
+                                } else {
+                                    result = elt[3];
+                                }
                             }
                         });
                         return result;

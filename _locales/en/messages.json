@@ -111,6 +111,10 @@
         "message" : "Description",
         "description" : "Name of the description field"
     },
+    "categoriesField" : {
+        "message" : "Categories",
+        "description" : "Name of the categories field"
+    },
     "closeButton" : {
         "message" : "Close",
         "description" : "Name of the close button"

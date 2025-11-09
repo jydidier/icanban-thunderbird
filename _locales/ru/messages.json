@@ -111,6 +111,10 @@
         "message" : "Описание",
         "description" : "Название поля описания"
     },
+    "categoriesField" : {
+        "message" : "Категории",
+        "description" : "Название поля категорий"
+    },
     "closeButton" : {
         "message" : "Закрыть",
         "description" : "Название кнопки закрытия"
