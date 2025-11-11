@@ -144,21 +144,28 @@ class Component {
                     },
                     set: function(value) {
                         let updated = false;
-                        if (value === undefined) {
-                            let idx = self.data[1].findIndex(elt => elt[0]===element);
-                            self.data[1].splice(idx,1);
+                        if (value === undefined || Array.isArray(value)) {
+                            self.data[1] = self.data[1].filter(elt => elt[0] !== element);
+                            /*let idx = self.data[1].findIndex(elt => elt[0]===element);
+                            self.data[1].splice(idx,1);*/
                             updated = true;
                         } 
 
-                        self.data[1].forEach(elt => {
-                            if (elt[0] === element) {
-                                elt[3] = value;
-                                updated = true;
-                            }
-                        })
-                        // TODO: check a little bit more what we are writing.
-                        if (!updated)
-                            self.data[1].push([element, {}, properties[element].type, value]);
+                        if (Array.isArray(value)) {
+                            value.forEach(v => {
+                                self.data[1].push([element, {}, properties[element].type, v]);
+                            });
+                        } else {
+                            self.data[1].forEach(elt => {
+                                if (elt[0] === element) {
+                                    elt[3] = value;
+                                    updated = true;
+                                }
+                            })
+                            // TODO: check a little bit more what we are writing.
+                            if (!updated)
+                                self.data[1].push([element, {}, properties[element].type, value]);
+                        }
                     }
                 });
             }

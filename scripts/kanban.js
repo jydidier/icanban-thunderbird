@@ -143,7 +143,8 @@ const saveTask = async (evt) => {
     let calendarId = taskModal.dataset.calendarId;
     let parent = document.getElementById('taskParent').value;
     let newCalendarId = document.getElementById('taskCalendar').value;
-
+    let taskCategories = 
+        (document.getElementById('taskCategories').value ?? '').split(',').map(elt => elt.trim());
 
     let item = (id !== "null") ?
         asTodo(await mc.items.get(calendarId, id, { returnFormat: "jcal" })) : 
@@ -183,6 +184,11 @@ const saveTask = async (evt) => {
     if (priority !== item.priority) {
         item.priority = parseInt(priority);
     }
+
+    if (taskCategories !== item.categories) {
+        item.categories = taskCategories;
+    }
+
     item.status = status;
     
     if (id !== "null") {
@@ -536,8 +542,13 @@ let populateBoard = async () => {
         if (document.getElementById(element.id) === null) {
             const template = document.getElementById('cardTemplate');
             const card = template.content.cloneNode(true).children[0];
-            if (todo.categories)
-                todo.categories.forEach(cat => categories.add(cat));
+            if (todo.categories) {
+                if (Array.isArray(todo.categories)) {
+                    todo.categories.forEach(cat => categories.add(cat));
+                } else {
+                    categories.add(todo.categories);
+                }
+            }
             card.id = element.id;
             card.addEventListener("dragstart", (event) => {
                 event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
@@ -602,9 +613,9 @@ let populateBoard = async () => {
                 cardFooter.appendChild(
                     document.createTextNode(
                         ' '+
-                        Array.isArray(todo.categories)?
+                        (Array.isArray(todo.categories)?
                             todo.categories.join(', '):
-                            todo.categories
+                            todo.categories)
                     )
                 );
             }
