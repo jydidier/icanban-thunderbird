@@ -317,6 +317,55 @@ const filterModal = document.getElementById('filterModal');
 const allCalendars = document.getElementById('allCalendars');
 const applyFilterButton = document.getElementById('applyFilter');
 const allPriorities = document.getElementById('allPriorities');
+const allCategories = document.getElementById('allCategories');
+const categoriesPlaceholder = document.getElementById('categoriesPlaceholder');
+
+let populateCategories = () => {
+    categoriesPlaceholder.textContent = "";
+    let div = document.createElement('div');
+    div.classList.add('form-check', 'form-check-inline');
+    let input = document.createElement('input');
+    input.classList.add('form-check-input');
+    input.type = 'checkbox';
+    input.id = 'categorie-_blank_';
+    input.value = null;
+    let label = document.createElement('label');
+    label.classList.add('form-check-label');
+    label.htmlFor = 'categorie-_blank_';
+    label.textContent = browser.i18n.getMessage('withoutAny');
+    input.checked = filter.categories?.includes("");
+
+
+    if (allCategories.checked) input.disabled = true;
+
+    categoriesPlaceholder.appendChild(div);
+    div.appendChild(input);
+    div.appendChild(label);
+
+    for(let c of categories) {
+        div = document.createElement('div');
+        div.classList.add('form-check', 'form-check-inline');
+
+        input = document.createElement('input');
+        input.classList.add('form-check-input');
+        input.type = 'checkbox';
+        input.id = `categorie-${c.toLowerCase()}`;
+        input.value = c;
+        if (filter.categories) {
+            input.checked = filter.categories.includes(c);
+        }
+
+        label = document.createElement('label');
+        label.classList.add('form-check-label');
+        label.htmlFor = `categorie-${c.toLowerCase()}`;
+        label.textContent = c;
+    
+        categoriesPlaceholder.appendChild(div);
+        div.appendChild(input);
+        div.appendChild(label);
+    }
+}
+
 
 let populateCalendars = (calendars, filterList) => {
     filterList.textContent = "";
@@ -355,6 +404,16 @@ if (filterModal) {
             allCalendars.checked = false;
         }
 
+        populateCategories();
+
+        if (filter.categories !== undefined && filter.categories.length > 0) {
+            allCategories.checked = false;
+            for (let c of filter.categories) {
+                let cat = document.querySelector(`#categoryPlaceholder input[value="${c}"]`);
+                if (cat) cat.checked = true;
+            }
+        }
+
         if (filter.priority !== undefined) {
             allPriorities.checked = false;
             document,querySelector(`#priorityList input[value=${filter.priority}]`).checked = true;
@@ -377,6 +436,11 @@ if (filterModal) {
             checkbox.disabled = allPriorities.checked;
         });
 
+        let checkboxesCat = document.querySelectorAll('#categoriesPlaceholder input');
+        checkboxesCat.forEach(checkbox => {
+            checkbox.disabled = allCategories.checked;
+        });
+
     });
 }
 
@@ -393,6 +457,11 @@ if (applyFilterButton) {
         let priorities = [];
         if (!allPriorities.checked) {
             priorities = Array.from(priorityList.querySelectorAll('input:checked')).map(input => parseInt(input.value));
+        }
+        let categoryList = document.getElementById('categoryList');
+        if (!allCategories.checked) {
+            filter.categories = [];
+            Array.from(categoriesPlaceholder.querySelectorAll('input:checked')).forEach(input => filter.categories.push(input.value));
         }
 
         if (calendarIds.length > 0) {
@@ -427,6 +496,15 @@ if (allPriorities) {
             checkbox.disabled = event.target.checked;
         });
     });
+}
+
+if (allCategories) {
+    allCategories.addEventListener('change', async(event) => {
+        let checkboxes = document.querySelectorAll("#categoriesPlaceholder input");
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = event.target.checked;
+        });        
+    })
 }
 
 /* handling modal for sorting */
@@ -521,7 +599,18 @@ let populateBoard = async () => {
     let items = (await mc.items.query(Object.assign({ type: "task", returnFormat: "jcal"}, filter))).filter(item => {
         if (filter.priority !== undefined && asTodo(item).priority !== filter.priority) {
             return false;
-        }   
+        }
+
+        if (filter.categories !== undefined) {
+            if (asTodo(item).categories === null && filter.categories.includes(""))
+                return true; 
+            
+            let catTasks = new Set(asTodo(item).categories);
+            if (catTasks.intersection(new Set(filter.categories)).size === 0) {
+                return false;
+            }
+        }
+
         if (!globalThis.browser && filter.calendarId !== undefined && !filter.calendarId.includes(item.calendarId)) {
             return false;
         }

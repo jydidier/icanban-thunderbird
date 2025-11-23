@@ -115,6 +115,14 @@
         "message" : "カテゴリー",
         "description" : "カテゴリーのフィールド名"
     },
+    "allCategoriesLabel": {
+        "message": "すべてのカテゴリー",
+        "description": "すべてのカテゴリーを示すラベル名"
+    },
+    "withoutAny": {
+        "message": "なし",
+        "description": "カテゴリーのないタスク用のラベル"
+    },    
     "closeButton": {
         "message": "閉じる",
         "description": "閉じるボタンの名前"

@@ -115,6 +115,14 @@
         "message" : "Categories",
         "description" : "Name of the categories field"
     },
+    "allCategoriesLabel" : {
+        "message" : "All categories",
+        "description" : "Name of the all categories label"
+    },
+    "withoutAny" : {
+        "message" : "Without any",
+        "description" : "Label for selecting empty categories"
+    },
     "closeButton" : {
         "message" : "Close",
         "description" : "Name of the close button"

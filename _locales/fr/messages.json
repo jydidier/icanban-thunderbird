@@ -110,11 +110,7 @@
     "descriptionField" : {
         "message" : "Description",
         "description" : "Nom du champ description d'une tâche"
-    },
-    "categoriesField" : {
-        "message" : "Catégories",
-        "description" : "Nom du champ des catégories"
-    },
+    }, 
     "closeButton" : {
         "message" : "Fermer",
         "description" : "Nom du bouton fermer"

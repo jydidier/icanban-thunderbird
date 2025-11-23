@@ -81,6 +81,13 @@
                 ],
                 "optional": true
               },
+              "categories" : {
+                "choices": [
+                  { "type": "string" },
+                  { "type": "array", "items": { "type": "string" } }
+                ],
+                "optional": true
+              },
               "type": { "type": "string", "enum": ["event", "task"], "optional": true },
               "rangeStart": { "type": "string", "optional": true },
               "rangeEnd": { "type": "string", "optional": true },

@@ -115,6 +115,14 @@
         "message" : "Категории",
         "description" : "Название поля категорий"
     },
+    "allCategoriesLabel": {
+        "message": "Все категории",
+        "description": "Название ярлыка, обозначающего все категории"
+    },
+    "withoutAny": {
+        "message": "Без",
+        "description": "Ярлык для задач без категорий"
+    },
     "closeButton" : {
         "message" : "Закрыть",
         "description" : "Название кнопки закрытия"
