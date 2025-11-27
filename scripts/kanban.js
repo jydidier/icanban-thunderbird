@@ -601,11 +601,20 @@ let populateBoard = async () => {
             return false;
         }
 
+        let todoCategories = asTodo(item).categories;
+        if (todoCategories) {
+            if (Array.isArray(todoCategories)) {
+                todoCategories.forEach(cat => categories.add(cat));
+            } else {
+                categories.add(todoCategories);
+            }
+        }
+
         if (filter.categories !== undefined) {
-            if (asTodo(item).categories === null && filter.categories.includes(""))
+            if (todoCategories === null && filter.categories.includes(""))
                 return true; 
             
-            let catTasks = new Set(asTodo(item).categories);
+            let catTasks = new Set(todoCategories);
             if (catTasks.intersection(new Set(filter.categories)).size === 0) {
                 return false;
             }
@@ -631,13 +640,6 @@ let populateBoard = async () => {
         if (document.getElementById(element.id) === null) {
             const template = document.getElementById('cardTemplate');
             const card = template.content.cloneNode(true).children[0];
-            if (todo.categories) {
-                if (Array.isArray(todo.categories)) {
-                    todo.categories.forEach(cat => categories.add(cat));
-                } else {
-                    categories.add(todo.categories);
-                }
-            }
             card.id = element.id;
             card.addEventListener("dragstart", (event) => {
                 event.dataTransfer.setData("text/plain", JSON.stringify({id : element.id, calendarId: element.calendarId}));
